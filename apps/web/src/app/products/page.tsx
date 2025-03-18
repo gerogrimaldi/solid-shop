@@ -2,19 +2,25 @@ import NavBar from "@/components/NavBar";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/app/types/product";
 
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    name: "Producto Ejemplo",
-    description: "Descripción del producto",
-    price: 99.99,
-    stock: 10,
-    category: "Electrónica",
-    image: "https://via.placeholder.com/150",
-  },
-];
+// Obtener los productos desde la API usando getServerSideProps
+const fetchProducts = async (): Promise<Product[]> => {
+  try {
+    const res = await fetch('http://localhost:8000/api/products');
+    if (!res.ok) {
+      throw new Error('Error fetching products');
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
 
-export default function Home() {
+interface HomeProps {
+  products: Product[];
+}
+
+const Home = ({ products }: HomeProps) => {
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
@@ -24,7 +30,7 @@ export default function Home() {
           Explora nuestra variedad de productos y encuentra lo que necesitas al mejor precio.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {mockProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -34,4 +40,6 @@ export default function Home() {
       </footer>
     </div>
   );
-}
+};
+
+export default Home;
