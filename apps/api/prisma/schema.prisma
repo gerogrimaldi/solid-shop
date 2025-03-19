@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  ADMIN
+  USER
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  name        String
+  description String
+  Category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  price       Float
+  stock       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cartItems   CartItem[]
+  wishlist    WishlistItem[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Role      Roles    @default(USER)
+
+  wishlist  Wishlist @relation(fields: [wishlistId], references: [id])
+  wishlistId String
+  cart      Cart @relation(fields: [cartId], references: [id])
+  cartId    String
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product Product[]
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products  WishlistItem[]
+
+  User User[]
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products  CartItem[]
+  User User[]
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  wishlist  Wishlist @relation(fields: [wishlistId], references: [id])
+  wishlistId String
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  cart      Cart @relation(fields: [cartId], references: [id])
+  cartId    String
+}

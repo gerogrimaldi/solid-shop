@@ -1,9 +1,11 @@
-// pages/category/[id].tsx
-import { useRouter } from 'next/router';
+"use client"
 
-const CategoryDetail = () => {
-  const router = useRouter();
-  const { id } = router.query;
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
 
   return (
     <div className="container mx-auto p-6">
@@ -13,5 +15,3 @@ const CategoryDetail = () => {
     </div>
   );
 }
-
-export default CategoryDetail;
