@@ -18,7 +18,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold mt-4">Bienvenido a Mi Ecommerce</h1>
         <p className="text-gray-600 mt-2">Encuentra los mejores productos al mejor precio.</p>
         <Link
-          href="/products"
+          href="/categories"
           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
         >
           Ver Productos

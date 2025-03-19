@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { Product } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
+import { useParams } from "next/navigation";
 
 interface CategoryDetailProps {
   params: { name: string };
 }
 
-export default async function CategoryDetail({ params }: CategoryDetailProps) {
-  const { name } = await params;
+export default  function CategoryDetail({ params }: CategoryDetailProps) {
+  const { name } =  useParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
