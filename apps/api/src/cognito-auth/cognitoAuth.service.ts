@@ -31,6 +31,7 @@ export class CognitoAuthService {
     this.clientId = this.configService.get<string>('COGNITO_CLIENT_ID') ?? '';
   }
 
+  // registro
   async signUp(signUpDto: RegisterAuthDto): Promise<any> {
     try {
       const command = new SignUpCommand({
@@ -39,11 +40,11 @@ export class CognitoAuthService {
         Password: signUpDto.password,
         UserAttributes: [
           { Name: 'email', Value: signUpDto.email },
-          { Name: 'preferred_username', Value: signUpDto.userName },
+          { Name: 'preferred_username', Value: signUpDto.username },
         ],
       });
       return await this.cognitoClient.send(command);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestException(error.message || 'Sign-up failed');
     }
   }
@@ -56,11 +57,12 @@ export class CognitoAuthService {
         ConfirmationCode: confirmDto.pin,
       });
       return await this.cognitoClient.send(command);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestException(error.message || 'Confirmation failed');
     }
   }
 
+  // login
   async signIn(loginDto: LoginAuthDto): Promise<any> {
     try {
       const command = new InitiateAuthCommand({
@@ -73,7 +75,7 @@ export class CognitoAuthService {
       });
       const response = await this.cognitoClient.send(command);
       return response.AuthenticationResult;
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'NotAuthorizedException') {
         throw new UnauthorizedException('Invalid credentials');
       } else if (error.name === 'UserNotFoundException') {
@@ -102,7 +104,7 @@ export class CognitoAuthService {
         idToken: response.AuthenticationResult?.IdToken,
         expiresIn: response.AuthenticationResult?.ExpiresIn,
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'NotAuthorizedException') {
         throw new UnauthorizedException('Invalid or expired refresh token');
       }

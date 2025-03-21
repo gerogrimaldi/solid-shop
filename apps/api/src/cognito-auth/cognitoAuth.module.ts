@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { CognitoAuthService } from './cognitoAuth.service';
 import { CognitoAuthController } from './cognitoAuth.controller';
-import { UserService } from 'src/user/user.service';
-import { JwtModule } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersService } from 'src/users/users.service';
+import { PrismaService } from 'prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [CognitoAuthController],
-  providers: [CognitoAuthService, UserService, PrismaService],
+  providers: [CognitoAuthService, UsersService, PrismaService, ConfigService],
 })
 export class CognitoAuthModule {}
