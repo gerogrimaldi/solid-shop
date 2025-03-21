@@ -6,46 +6,45 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    private prisma: PrismaService,
-    private productsService: ProductsService
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
-  }
-
-  findAll() {
-    return `This action returns all categories`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
-
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} category`;
-  }
-
-
-  async getProductsByCategory(name: string) {
-    // Buscar la categoría por nombre
-    const category = await this.prisma.category.findFirst({
-      where: { name },
+  async create(createCategoryDto: CreateCategoryDto) {
+    return await this.prisma.category.create({
+      data: {
+        name: createCategoryDto.name,
+      },
     });
-  
-    if (!category) {
-      throw new Error(`La categoría '${name}' no existe`);
-    }
-  
-    // Buscar productos con el id
-    const products = this.productsService.getProductsByCategory(category.id);
-    
-    return products;
   }
-  
+
+  async findAll() {
+    return await this.prisma.category.findMany();
+  }
+
+  async findOne(id: string) {
+    return await this.prisma.category.findUnique({
+      where: { id },
+    });
+  }
+
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    return await this.prisma.category.update({
+      where: { id },
+      data: {
+        name: updateCategoryDto.name,
+      },
+    });
+  }
+
+  async remove(id: string) {
+    return await this.prisma.category.delete({
+      where: { id },
+    });
+  }
+
+  // Obtener productos por categoría
+  async getProductsByCategory(categoryId: string) {
+    return await this.prisma.product.findMany({
+      where: { categoryId },
+    });
+  }
 }
