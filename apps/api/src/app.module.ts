@@ -8,10 +8,11 @@ import { CategoriesModule } from './categories/categories.module';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 import { CartsModule } from './carts/carts.module';
 import { UsersModule } from './users/users.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
 
 
 @Module({
-  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule],
+  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule, WishlistsModule],
   // imports: [LinksModule, ServeStaticModule.forRoot({
   //   rootPath: join  (__dirname + '/../../web/next'),
   // })],
