@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.772.0",
-    "@nestjs/common": "^11.0.2",
+    "@nestjs/common": "^11.0.12",
     "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.0",
     "@nestjs/jwt": "^11.0.0",
@@ -26,6 +26,7 @@
     "@nestjs/swagger": "^11.0.7",
     "@prisma/client": "^6.0.1",
     "@repo/api": "*",
+    "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "reflect-metadata": "^0.2.0",
