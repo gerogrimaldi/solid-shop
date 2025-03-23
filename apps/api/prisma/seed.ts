@@ -4,112 +4,102 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Crear categorías
-  const electronicsCategory = await prisma.category.create({
-    data: {
-      name: "Electrónica",
-    },
+  const categories = await prisma.category.createMany({
+    data: [
+      { name: "Electrónica" },
+      { name: "Ropa" },
+      { name: "Hogar" },
+      { name: "Deportes" },
+    ],
   });
 
-  const clothingCategory = await prisma.category.create({
-    data: {
-      name: "Ropa",
-    },
-  });
+  const allCategories = await prisma.category.findMany();
 
   // Crear productos
-  const product1 = await prisma.product.create({
-    data: {
-      name: "Smartphone",
-      description: "Un smartphone de última generación",
-      price: 499.99,
-      stock: 100,
-      categoryId: electronicsCategory.id,
-    //   image: "https://via.placeholder.com/150",
-    },
+  const products = await prisma.product.createMany({
+    data: [
+      { name: "Smartphone", description: "Última generación", price: 499.99, stock: 100, categoryId: allCategories[0].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Laptop", description: "Gran rendimiento", price: 999.99, stock: 50, categoryId: allCategories[0].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "T-shirt", description: "Camiseta algodón", price: 19.99, stock: 200, categoryId: allCategories[1].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Jeans", description: "Jeans ajustados", price: 39.99, stock: 150, categoryId: allCategories[1].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Sofá", description: "Sofá cómodo", price: 299.99, stock: 20, categoryId: allCategories[2].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Lámpara", description: "Lámpara moderna", price: 49.99, stock: 80, categoryId: allCategories[2].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Pelota de fútbol", description: "Pelota oficial", price: 25.99, stock: 120, categoryId: allCategories[3].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Bicicleta", description: "Bicicleta de montaña", price: 599.99, stock: 30, categoryId: allCategories[3].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Tablet", description: "Pantalla HD", price: 299.99, stock: 70, categoryId: allCategories[0].id, imageUrl: "https://via.placeholder.com/150" },
+      { name: "Reloj inteligente", description: "Monitoreo de salud", price: 149.99, stock: 90, categoryId: allCategories[0].id, imageUrl: "https://via.placeholder.com/150" },
+    ],
   });
 
-  const product2 = await prisma.product.create({
-    data: {
-      name: "Laptop",
-      description: "Laptop ultradelgada con gran rendimiento",
-      price: 999.99,
-      stock: 50,
-      categoryId: electronicsCategory.id,
-    //   image: "https://via.placeholder.com/150",
-    },
-  });
+  const allProducts = await prisma.product.findMany();
 
-  const product3 = await prisma.product.create({
-    data: {
-      name: "T-shirt",
-      description: "Camiseta de algodón de alta calidad",
-      price: 19.99,
-      stock: 200,
-      categoryId: clothingCategory.id,
-    //   image: "https://via.placeholder.com/150",
-    },
-  });
-
-  const product4 = await prisma.product.create({
-    data: {
-      name: "Jeans",
-      description: "Jeans ajustados para todos los días",
-      price: 39.99,
-      stock: 150,
-      categoryId: clothingCategory.id,
-    //   image: "https://via.placeholder.com/150",
-    },
-  });
-
-  // Crear un usuario
-  const user = await prisma.user.create({
-    data: {
-      email: "usuario@ejemplo.com",
-      username: "usuarioEjemplo",
-      password: "password123", // Asegúrate de usar un hash de contraseña en producción
-      Role: Roles.USER,
-      wishlist: {
-        create: {},
+  // Crear usuarios
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        email: "admin@admin.com",
+        username: "admin",
+        password: "admin",
+        Role: Roles.ADMIN,
+        wishlist: { create: {} },
+        cart: { create: {} },
       },
-      cart: {
-        create: {},
+    }),
+    prisma.user.create({
+      data: {
+        email: "user1@example.com",
+        username: "user1",
+        password: "password1",
+        Role: Roles.USER,
+        wishlist: { create: {} },
+        cart: { create: {} },
       },
-    },
+    }),
+    prisma.user.create({
+      data: {
+        email: "user2@example.com",
+        username: "user2",
+        password: "password2",
+        Role: Roles.USER,
+        wishlist: { create: {} },
+        cart: { create: {} },
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: "user3@example.com",
+        username: "user3",
+        password: "password3",
+        Role: Roles.USER,
+        wishlist: { create: {} },
+        cart: { create: {} },
+      },
+    }),
+  ]);
+
+  // Agregar productos a carritos
+  await prisma.cartItem.createMany({
+    data: [
+      { productId: allProducts[0].id, cartId: users[1].cartId, quantity: 1 },
+      { productId: allProducts[2].id, cartId: users[1].cartId, quantity: 2 },
+      { productId: allProducts[4].id, cartId: users[2].cartId, quantity: 1 },
+      { productId: allProducts[5].id, cartId: users[2].cartId, quantity: 1 },
+      { productId: allProducts[7].id, cartId: users[3].cartId, quantity: 3 },
+    ],
   });
 
-  // Agregar productos al carrito
-  await prisma.cartItem.create({
-    data: {
-      productId: product1.id,
-      cartId: user.cartId,
-      quantity: 1,
-    },
+  // Agregar productos a wishlists
+  await prisma.wishlistItem.createMany({
+    data: [
+      { productId: allProducts[3].id, wishlistId: users[1].wishlistId },
+      { productId: allProducts[6].id, wishlistId: users[1].wishlistId },
+      { productId: allProducts[8].id, wishlistId: users[2].wishlistId },
+      { productId: allProducts[9].id, wishlistId: users[3].wishlistId },
+      { productId: allProducts[1].id, wishlistId: users[3].wishlistId },
+    ],
   });
 
-  await prisma.cartItem.create({
-    data: {
-      productId: product2.id,
-      cartId: user.cartId,
-      quantity: 2,
-    },
-  });
-
-  // Agregar productos a la wishlist
-  await prisma.wishlistItem.create({
-    data: {
-      productId: product3.id,
-      wishlistId: user.wishlistId,
-    },
-  });
-
-  await prisma.wishlistItem.create({
-    data: {
-      productId: product4.id,
-      wishlistId: user.wishlistId,
-    },
-  });
-
-  console.log("Seed completado");
+  console.log("Seed completado exitosamente");
 }
 
 main()
