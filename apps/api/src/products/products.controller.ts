@@ -7,8 +7,8 @@ import { RolesGuard } from 'src/custom-decorators/roles.guard';
 import { AcceptedRoles } from 'src/custom-decorators/roles.decorator';
 
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@AcceptedRoles('ADMIN')
+// @UseGuards(JwtAuthGuard, RolesGuard)
+// @AcceptedRoles('ADMIN')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
