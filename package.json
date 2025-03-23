@@ -28,7 +28,11 @@
     "packages/*"
   ],
   "dependencies": {
+    "@nestjs/common": "^11.0.12",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
     "class-validator": "^0.14.1",
-    "jwt-decode": "^4.0.0"
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
   }
 }
