@@ -24,15 +24,19 @@ export class AuthService {
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
     };
-    const access_token= this.jwtService.sign(payload, {
+    const access_token = await this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET || "supersecret",
       expiresIn: '30m'
     })
-    res.cookie('Authentication', access_token, {
-      secure: true,
-      httpOnly: true,
-      expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+    const refresh_token = await this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET2 || "supersecret2",
+      expiresIn: '3h'
     })
+    // res.cookie('Authentication', access_token, {
+    //   secure: true,
+    //   httpOnly: true,
+    //   expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+    // })
     return access_token ;
   }
 
