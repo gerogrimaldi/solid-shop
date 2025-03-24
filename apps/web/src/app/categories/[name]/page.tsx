@@ -18,7 +18,7 @@ export default  function CategoryDetail({ params }: CategoryDetailProps) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`/api/categories/${name}/products`);
+        const res = await fetch(`/api/categories/${name}`);
         if (!res.ok) throw new Error("Error fetching products");
 
         const data = await res.json();
