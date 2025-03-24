@@ -2,11 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { CartsService } from './carts.service';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
-import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
 
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
@@ -31,7 +31,7 @@ export class CartsController {
     return this.cartsService.updateUserCart(updateCartItemDto);
   }
 
-  @AcceptedRoles('ADMIN')
+  @AcceptedRoles('ADMIN', 'USER')
   @Delete(':itemId')
   remove(@Param('itemId') itemId: string) {
     return this.cartsService.remove(itemId);

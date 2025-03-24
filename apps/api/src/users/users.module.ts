@@ -15,5 +15,6 @@ import { JwtService } from '@nestjs/jwt';
       PrismaService, 
       JwtService
     ],
+    exports:[UsersService]
 })
 export class UsersModule {}

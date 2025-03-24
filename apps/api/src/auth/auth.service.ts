@@ -14,13 +14,11 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async login(loginAuthDto: LoginAuthDto) {
-    const user = await this.userService.getUserByEmail(loginAuthDto.email);
-    if (!user || !(await bcrypt.compare(loginAuthDto.password, user.password))) {
-      throw new Error('Invalid credentials');
-    }
+  // LOGIN 
+  async login(user: any) {
     // el payload genera los claims del token
     const payload = { 
+      sub: user.id,
       username: user.username, 
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
@@ -33,6 +31,19 @@ export class AuthService {
     };
   }
 
+  // local validacion de credenciales 
+  async validateUser(loginAuthDto: LoginAuthDto) {
+   
+    const user = await this.userService.getUserByEmail(loginAuthDto.email);
+    if (!user || !(await bcrypt.compare(loginAuthDto.password, user.password))) {
+      return null;
+    }
+
+    const {password, ...result} = user;
+    return result;
+  }
+
+  // REGISTER
   async register(registerAuthDto: RegisterAuthDto) {
     const hashedPassword: string = await bcrypt.hash(registerAuthDto.password, 10);
     const user = await this.userService.createUser({
@@ -46,6 +57,7 @@ export class AuthService {
     return transformedUser;
   }
 
+  // UPDATE
   async updateUser(id:string, registerAuthDto: RegisterAuthDto) {
     const hashedPassword: string = await bcrypt.hash(registerAuthDto.password, 10);
     const user = await this.userService.update(

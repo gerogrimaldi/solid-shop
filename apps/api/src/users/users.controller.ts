@@ -4,8 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserByEmailRequestDto } from './dto/get-user-by-email';
 import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/custom-decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 // @AcceptedRoles('ADMIN')

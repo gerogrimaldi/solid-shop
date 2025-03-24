@@ -31,6 +31,7 @@ export class CategoriesService {
       where: { id },
       data: {
         name: updateCategoryDto.name,
+        updatedAt: updateCategoryDto.updatedDate
       },
     });
   }
