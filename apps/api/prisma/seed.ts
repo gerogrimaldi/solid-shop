@@ -1,4 +1,4 @@
-import { PrismaClient, Roles } from "@prisma/client";
+import { PrismaClient, Roles } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -6,67 +6,68 @@ async function main() {
   // Crear categorías
   const electronicsCategory = await prisma.category.create({
     data: {
-      name: "Electrónica",
+      name: 'Electrónica',
     },
   });
 
   const clothingCategory = await prisma.category.create({
     data: {
-      name: "Ropa",
+      name: 'Ropa',
     },
   });
 
   // Crear productos
   const product1 = await prisma.product.create({
     data: {
-      name: "Smartphone",
-      description: "Un smartphone de última generación",
+      name: 'Smartphone',
+      description: 'Un smartphone de última generación',
       price: 499.99,
       stock: 100,
       categoryId: electronicsCategory.id,
-    //   image: "https://via.placeholder.com/150",
+      //   image: "https://via.placeholder.com/150",
     },
   });
 
   const product2 = await prisma.product.create({
     data: {
-      name: "Laptop",
-      description: "Laptop ultradelgada con gran rendimiento",
+      name: 'Laptop',
+      description: 'Laptop ultradelgada con gran rendimiento',
       price: 999.99,
       stock: 50,
       categoryId: electronicsCategory.id,
-    //   image: "https://via.placeholder.com/150",
+      //   image: "https://via.placeholder.com/150",
     },
   });
 
   const product3 = await prisma.product.create({
     data: {
-      name: "T-shirt",
-      description: "Camiseta de algodón de alta calidad",
+      name: 'T-shirt',
+      description: 'Camiseta de algodón de alta calidad',
       price: 19.99,
       stock: 200,
       categoryId: clothingCategory.id,
-    //   image: "https://via.placeholder.com/150",
+      //   image: "https://via.placeholder.com/150",
     },
   });
 
   const product4 = await prisma.product.create({
     data: {
-      name: "Jeans",
-      description: "Jeans ajustados para todos los días",
+      name: 'Jeans',
+      description: 'Jeans ajustados para todos los días',
       price: 39.99,
       stock: 150,
       categoryId: clothingCategory.id,
-    //   image: "https://via.placeholder.com/150",
+      //   image: "https://via.placeholder.com/150",
     },
   });
 
+  await prisma.user.deleteMany();
   // Crear un usuario
   const user = await prisma.user.create({
     data: {
-      email: "usuario@ejemplo.com",
-      username: "usuarioEjemplo",
-      password: "password123", // Asegúrate de usar un hash de contraseña en producción
+      email: 'usuario@ejemplo.com',
+      username: 'usuarioEjemplo',
+      password: 'password123', // Asegúrate de usar un hash de contraseña en producción
       Role: Roles.USER,
       wishlist: {
         create: {},
@@ -109,7 +110,7 @@ async function main() {
     },
   });
 
-  console.log("Seed completado");
+  console.log('Seed completado');
 }
 
 main()
