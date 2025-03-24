@@ -1,28 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, Length, } from 'class-validator';
 
 // @Exclude()
 export class RegisterAuthDto{
-   @Expose()
-    @IsString()
     @IsNotEmpty()
-    @MinLength(3)
-    @MaxLength(15)
-    @ApiProperty()
-    username: string;
-    
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    @IsEmail()
-    @ApiProperty()
-    email: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @MinLength(8)
-    @MaxLength(100)
-    @ApiProperty()
-    password: string;
+     @IsString()
+     @Length(3,20)
+     @ApiProperty()
+     username: string;
+     
+     @IsNotEmpty()
+     @IsString()
+     @IsEmail()
+     @ApiProperty()
+     email: string;
+ 
+     @IsNotEmpty()
+     @IsString()
+     @IsStrongPassword({
+         minLength: 8,
+         minLowercase: 1,
+         minNumbers: 1,
+         minSymbols: 1,
+         minUppercase: 1
+     })
+     @ApiProperty()
+     password: string;
 }

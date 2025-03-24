@@ -3,8 +3,8 @@ import { WishlistsService } from './wishlists.service';
 import { CreateWishlistItemDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistItemDto } from './dto/update-wishlist.dto';
 import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/custom-decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('wishlists')
@@ -24,7 +24,7 @@ export class WishlistsController {
     return this.wishlistsService.findUserWishlist(userId);
   }
 
-  @AcceptedRoles('ADMIN')
+  @AcceptedRoles('ADMIN', 'USER')
   @Delete(':itemId')
   remove(@Param('itemId') itemId: string) {
     return this.wishlistsService.remove(itemId);

@@ -2,17 +2,17 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
 
 
-// @UseGuards(JwtAuthGuard, RolesGuard)
-// @AcceptedRoles('ADMIN')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-
+  
+  @AcceptedRoles('ADMIN')
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
@@ -28,11 +28,13 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @AcceptedRoles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);
   }
-
+  
+  @AcceptedRoles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
