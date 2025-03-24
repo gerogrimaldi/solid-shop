@@ -6,6 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
   ) {}
 
   // LOGIN 
-  async login(user: any) {
+  async login(user: any, res: Response) {
     // el payload genera los claims del token
     const payload = { 
       sub: user.id,
@@ -23,12 +24,16 @@ export class AuthService {
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
     };
-    return {
-      access_token: this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET || "supersecret",
-        expiresIn: '30m'
-      }),
-    };
+    const access_token= this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET || "supersecret",
+      expiresIn: '30m'
+    })
+    res.cookie('Authentication', access_token, {
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+    })
+    return access_token ;
   }
 
   // local validacion de credenciales 
