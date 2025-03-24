@@ -11,7 +11,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Req() req: Request, @Res() res: Response) {
+  login(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(req.user, res);
   }
 

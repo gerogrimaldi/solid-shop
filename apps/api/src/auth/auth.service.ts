@@ -32,12 +32,18 @@ export class AuthService {
       secret: process.env.JWT_SECRET2 || "supersecret2",
       expiresIn: '3h'
     })
-    // res.cookie('Authentication', access_token, {
-    //   secure: true,
-    //   httpOnly: true,
-    //   expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
-    // })
-    return access_token ;
+    res.cookie('Authentication', access_token, {
+      secure: true, //solo HTTPS
+      httpOnly: true, //previene XSS
+      expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+    })
+    res.cookie('RefreshToken', refresh_token, {
+      secure: true,      
+      httpOnly: true,     
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), //3 dias
+      sameSite: 'strict', // previene CSRF
+    });
+    return { access_token, refresh_token } ;
   }
 
   // local validacion de credenciales 
