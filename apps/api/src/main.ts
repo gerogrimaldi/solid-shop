@@ -9,7 +9,7 @@ async function bootstrap() {
   
   app.setGlobalPrefix('api'); //prefijo a todas las rutas del backend
 
-  // app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('e-commerce ejemplo')

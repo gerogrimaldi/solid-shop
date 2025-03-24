@@ -33,12 +33,14 @@ export class AuthService {
 
   // local validacion de credenciales 
   async validateUser(loginAuthDto: LoginAuthDto) {
-   
+     // recibe email y contraseña
     const user = await this.userService.getUserByEmail(loginAuthDto.email);
+    // getUserByEmail retorna el usuario completo con contraseña
     if (!user || !(await bcrypt.compare(loginAuthDto.password, user.password))) {
       return null;
     }
 
+  // aca ya nno devuelve la contraseña del user, si los demas datos
     const {password, ...result} = user;
     return result;
   }
