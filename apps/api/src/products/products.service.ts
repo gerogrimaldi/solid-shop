@@ -15,7 +15,7 @@ export class ProductsService {
         description: newProduct.description,
         categoryId: newProduct.categoryId,
         stock: newProduct.stock,
-        image: newProduct.image,
+        imageUrl: newProduct.imageUrl,
       },
     });
   }

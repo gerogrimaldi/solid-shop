@@ -27,5 +27,5 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  image?: string;
+  imageUrl: string;
 }

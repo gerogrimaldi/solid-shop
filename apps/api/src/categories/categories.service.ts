@@ -42,9 +42,13 @@ export class CategoriesService {
   }
 
   // Obtener productos por categoría
-  async getProductsByCategory(categoryId: string) {
+  async getProductsByCategory(categoryName: string) {
+    const category = await this.prisma.category.findFirst({
+      where: { name: categoryName },
+    });
+
     return await this.prisma.product.findMany({
-      where: { categoryId },
+      where: { categoryId: category.id },
     });
   }
 }
