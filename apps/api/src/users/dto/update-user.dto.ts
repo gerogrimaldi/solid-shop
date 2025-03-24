@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateUserDto } from './create-user.dto';
+import { Exclude } from 'class-transformer';
+import { IsDate } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+@Exclude()
+export class UpdateUserDto extends PartialType(CreateUserDto) {
+    @IsDate()
+    updatedAt: Date = new Date();
+}

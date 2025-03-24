@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -30,6 +30,7 @@ export class CategoriesService {
       where: { id },
       data: {
         name: updateCategoryDto.name,
+        updatedAt: updateCategoryDto.updatedDate
       },
     });
   }
@@ -45,6 +46,9 @@ export class CategoriesService {
     const category = await this.prisma.category.findFirst({
       where: { name: categoryName },
     });
+
+    if (!category)
+          throw new NotFoundException(`Category with name: ${categoryName} not found`);
 
     return await this.prisma.product.findMany({
       where: { categoryId: category.id },
