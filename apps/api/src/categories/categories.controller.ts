@@ -6,11 +6,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('categories')
 export class CategoriesController {
   constructor( private readonly categoriesService: CategoriesService) {}
   
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -32,12 +32,14 @@ export class CategoriesController {
     return this.categoriesService.getProductsByCategory(name);
   }
   
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
   
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {

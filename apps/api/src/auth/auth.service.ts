@@ -15,6 +15,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
+  //  ########################################################################################################
   // LOGIN 
   async login(user: any, res: Response) {
     // el payload genera los claims del token
@@ -46,6 +47,17 @@ export class AuthService {
     return { access_token, refresh_token } ;
   }
 
+  // LOGOUT
+  async logout(res: Response) {
+      res.clearCookie('Authentication');
+      res.clearCookie('RefreshToken');
+      res.status(200);
+      res.statusMessage = 'Logout exitoso';
+      return res.status(200).json({ message: 'Logout exitoso' });
+  }
+
+  //  ########################################################################################################
+// VALDIACIONES
   // local validacion de credenciales 
   async validateUser(loginAuthDto: LoginAuthDto) {
      // recibe email y contraseña
@@ -60,6 +72,30 @@ export class AuthService {
     return result;
   }
 
+  async verifyToken(req, res: Response) {
+    try {
+      const token = req.cookies['Authentication'];
+      
+      if (!token) {
+        return res.status(401).json({ error: 'No autenticado' });
+      }
+
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET || "supersecret"
+      });
+
+      console.log("inside verifiToken")
+      return res.json({
+        username: payload.username,
+        email: payload.email,
+        roles: payload.roles
+      });
+    } catch (error) {
+      return res.status(401).json({ error: 'Token inválido' });
+    }
+  }
+
+  //  ########################################################################################################
   // REGISTER
   async register(registerAuthDto: RegisterAuthDto) {
     const hashedPassword: string = await bcrypt.hash(registerAuthDto.password, 10);
@@ -74,6 +110,7 @@ export class AuthService {
     return transformedUser;
   }
 
+    //  ########################################################################################################
   // UPDATE
   async updateUser(id:string, registerAuthDto: RegisterAuthDto) {
     const hashedPassword: string = await bcrypt.hash(registerAuthDto.password, 10);

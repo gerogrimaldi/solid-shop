@@ -15,7 +15,7 @@ const SignupPage: React.FC = () => {
 
       if (!response.ok) throw new Error("Signup failed");
 
-      router.push("/login");
+      router.push("/auth/login");
     } catch (error) {
       console.error("Signup error:", error);
     }

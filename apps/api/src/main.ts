@@ -23,7 +23,11 @@ async function bootstrap() {
 
   // activo cookies
   app.use(cookieParser());
-
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  });
+  
   await app.listen(8000);
 }
 bootstrap();

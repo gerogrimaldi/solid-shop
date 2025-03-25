@@ -25,5 +25,14 @@ export class AuthController {
   updateUser(@Param('id') id: string, @Body() registerAuthDto: RegisterAuthDto) {
     return this.authService.updateUser(id, registerAuthDto);
   }
+  
+  @Get('verify')
+  async verifyToken(@Req() req, @Res() res: Response){
+    return this.authService.verifyToken(req, res);
+  }
 
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    return this.authService.logout(res);
+  }
 }

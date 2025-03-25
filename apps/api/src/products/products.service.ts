@@ -31,6 +31,37 @@ export class ProductsService {
     return product;
   }
 
+  async findCartProducts(cartItems: {id: string, productId: string, cartId:string, quantity: number }[]) {
+
+    // obtengo arreglo de ids de producto
+    const productIds = cartItems.map(item => item.productId);
+    // encuentro los productos
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select:{
+        id: true,
+        name: true,
+        description: true,
+        categoryId: true,
+        price: true,
+        stock: true,
+        imageUrl: true,
+      }
+    });
+  
+    if (products.length === 0) {
+      throw new NotFoundException('No se encontraron productos en el carrito');
+    }
+    // devuelvo nuevo arreglo con producto y su cantidad en el carrito
+    return cartItems.map(cartItem => {
+      const product = products.find(p => p.id === cartItem.productId);
+      return product ? { itemId:cartItem.id, ...product, quantity: cartItem.quantity } : null;
+    }).filter(Boolean); // Filtrar productos nulos
+  }
+  
+  
+  
+  
   async update(id: string, updateProductDto: UpdateProductDto) {
     return this.prisma.product.update({
       where: { id },

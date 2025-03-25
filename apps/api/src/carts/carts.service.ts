@@ -2,17 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class CartsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly productsService: ProductsService
+  ) {}
 
 //  POST
   async createCartItem(createCartItemDto: CreateCartItemDto) {
 
     const user = await this.prisma.user.findUnique({
       where: { id: createCartItemDto.userId },
-      select: { cartId: true }, // Solo traigo el cart Id
+      select: { cartId: true }, // Solo traigo el cartid
     });
 
     if (!user) {
@@ -30,64 +34,52 @@ export class CartsService {
     return "Se ha creado el siguiente item: \n" + cartItem;
   }
 
-  // GET
   async findUserCart(userId: string) {
+    if (!userId) {
+      throw new Error('User ID is missing');
+    }
+    // Buscar el usuario y obtener su cartId
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { cartId: true }, // Solo traigo el cart Id
+      select: { cartId: true },
     });
-
+  
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
-
-    return this.prisma.cartItem.findMany({
+  
+    // Obtener los items 
+    const cartItems = await this.prisma.cartItem.findMany({
       where: { cartId: user.cartId },
-      include: {
-        product: true,
-      },
+      select: {id:true, cartId:true, productId:true, quantity:true}
     });
+  
+    if (cartItems.length === 0) {
+      throw new NotFoundException('El carrito está vacío');
+    }
+  
+    // return
+    return this.productsService.findCartProducts(cartItems);
   }
-
+  
+  
   // UPDATE
-  async updateUserCart(updateCartItemDto: UpdateCartItemDto) {
-    
-    // obtengo user para sacar el cartId
-    const user = await this.prisma.user.findUnique({
-      where: { id: updateCartItemDto.userId },
-      select: { cartId: true }, // Solo traigo el cart Id
-    });
-
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-
-    //busco el item del carrito
-    const cartItem = await this.prisma.cartItem.findFirst({
-      where: { 
-        cartId: user.cartId,
-        productId: updateCartItemDto.productId,
-      },
-    });
-
-    if (!cartItem) {
-      throw new NotFoundException('Item not found in cart');
-    }
-
-    // edito el item del carrito
+  async updateUserCart(
+    itemId: string,
+    quantity: number
+  ) {
+    // Actualizar cantidad
     return this.prisma.cartItem.update({
-      where: { id: cartItem.id ?? '' },
-      data: {
-        quantity: updateCartItemDto.quantity,
-      }
+      where: { id: itemId },
+      data: { quantity }
     });
-
   }
 
-  // DELETE
-  async remove(itemId: string) {
+  async removeFromCart(
+    itemId: string
+  ) {
     return this.prisma.cartItem.delete({
-      where: { id: itemId },
-    })
+      where: { id: itemId }
+    });
   }
 }

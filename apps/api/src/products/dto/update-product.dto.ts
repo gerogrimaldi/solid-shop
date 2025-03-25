@@ -4,5 +4,5 @@ import { IsDate } from 'class-validator';
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
     @IsDate()
-    updateDate: Date = new Date()
+    updateDate?: Date = new Date()
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
@@ -19,21 +19,26 @@ export class CartsController {
 
   //podria recibir directamente el cartId?
   @AcceptedRoles('ADMIN', 'USER')
-  @Get(':userId')
-  findUserCart(@Param('userId') userId: string) {
+  @Get("items")
+  findUserCart(@Req() req) {
+    const userId = req.user.sub; // Obtiene el userId del JWT
+    // console.log('User ID from request:', req.user?.sub); // ← Verifica aquí
     return this.cartsService.findUserCart(userId);
   }
 
   //podria recibir directamente el itemId?
   @AcceptedRoles('ADMIN', 'USER')
-  @Patch()
-  updateUserCart(@Body() updateCartItemDto: UpdateCartItemDto) {
-    return this.cartsService.updateUserCart(updateCartItemDto);
+  @Patch('items')
+  async updateItem(
+    @Body('id') itemId: string,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.cartsService.updateUserCart(itemId, quantity);
   }
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Delete(':itemId')
-  remove(@Param('itemId') itemId: string) {
-    return this.cartsService.remove(itemId);
+  @Delete('items/:itemId')
+  async removeItem(@Param('itemId') itemId: string) {
+    return this.cartsService.removeFromCart( itemId);
   }
 }
