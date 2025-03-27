@@ -10,6 +10,7 @@ import { CartsModule } from './carts/carts.module';
 import { UsersModule } from './users/users.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { AuthModule } from './auth/auth.module';
+import { StockGateway } from './stock/stock.gateway';
 
 
 @Module({
@@ -18,6 +19,6 @@ import { AuthModule } from './auth/auth.module';
   //   rootPath: join  (__dirname + '/../../web/next'),
   // })],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StockGateway],
 })
 export class AppModule {}
