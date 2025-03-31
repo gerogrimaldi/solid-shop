@@ -33,6 +33,8 @@ export class CartsController {
     @Body('id') itemId: string,
     @Body('quantity') quantity: number,
   ) {
+    console.log('Item ID:', itemId); // ← Verifica aquí
+    console.log('Quantity:', quantity); // ← Verifica aquí
     return this.cartsService.updateUserCart(itemId, quantity);
   }
 

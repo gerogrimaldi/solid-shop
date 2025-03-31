@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -63,23 +63,30 @@ export class CartsService {
   }
   
   
-  // UPDATE
-  async updateUserCart(
-    itemId: string,
-    quantity: number
-  ) {
-    // Actualizar cantidad
-    return this.prisma.cartItem.update({
-      where: { id: itemId },
-      data: { quantity }
-    });
+  async updateUserCart(itemId: string, quantity: number) {
+    try {
+      return await this.prisma.cartItem.update({
+        where: { id: itemId },
+        data: { quantity },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Cart item with id ${itemId} not found`);
+      }
+      throw new InternalServerErrorException(`Error updating cart item: ${error.message}`);
+    }
   }
-
-  async removeFromCart(
-    itemId: string
-  ) {
-    return this.prisma.cartItem.delete({
-      where: { id: itemId }
-    });
+  
+  async removeFromCart(itemId: string) {
+    try {
+      return await this.prisma.cartItem.delete({
+        where: { id: itemId },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Cart item with id ${itemId} not found`);
+      }
+      throw new InternalServerErrorException(`Error removing cart item: ${error.message}`);
+    }
   }
 }
