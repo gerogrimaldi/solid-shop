@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import CartItemComponent from "@/components/CartItem";
+import CartItemComponent from "@/components/Items/CartItem";
 import { CartItem } from "../types/Items";
 
 export default function CartPage() {

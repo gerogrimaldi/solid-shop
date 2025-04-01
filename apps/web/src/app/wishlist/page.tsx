@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import WishlistItemComponent from "@/components/WishListItem";
+import WishlistItemComponent from "@/components/Items/WishListItem";
 import { WishlistItem } from "../types/Items";
 
 export default function WishlistPage() {
@@ -44,8 +44,6 @@ export default function WishlistPage() {
 
   const addToCart = async (productId: string, itemId:string) => {
     try {
-        // console.log("Agregando al carrito", productId);
-        // console.log("Eliminando", itemId);
       const response = await fetch('/api/carts/items', {
         method: 'POST',
         credentials: 'include',

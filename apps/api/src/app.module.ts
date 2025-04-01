@@ -10,10 +10,12 @@ import { CartsModule } from './carts/carts.module';
 import { UsersModule } from './users/users.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { AuthModule } from './auth/auth.module';
+import { S3Module } from './upload/s3.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 
 @Module({
-  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule, WishlistsModule, AuthModule],
+  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule, WishlistsModule, AuthModule, S3Module, ThrottlerModule],
   // imports: [LinksModule, ServeStaticModule.forRoot({
   //   rootPath: join  (__dirname + '/../../web/next'),
   // })],

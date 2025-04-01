@@ -65,7 +65,7 @@ async createCartItem(createCartItemDto: CreateCartItemDto) {
     });
   
     if (cartItems.length === 0) {
-      throw new NotFoundException('El carrito está vacío');
+      return [];
     }
   
     // return

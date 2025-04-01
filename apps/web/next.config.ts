@@ -19,6 +19,10 @@ const nextConfig = {
         pathname: '/150',
         search: '',
       },
+      {
+        protocol: 'https',
+        hostname: `${process.env.BUCKET_URL}`,
+      },
     ],
   },
 };

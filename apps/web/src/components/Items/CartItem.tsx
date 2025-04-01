@@ -10,6 +10,8 @@ interface CartItemProps {
 }
 
 export default function CartItemComponent({ item, updateQuantity, removeItem }: CartItemProps) {
+  console.log("ImageUrl in cartItem: " + item.imageUrl);
+  // Si no hay imagen, se muestra una imagen por defecto
   return (
     <div className="flex items-center p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
       <Image

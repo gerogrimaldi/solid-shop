@@ -55,7 +55,7 @@ async findUserWishlist(userId: string) {
     });
   
     if (wishlistItems.length === 0) {
-      throw new NotFoundException('La Wishlist está vacía');
+      return [];
     }
   
     // return
