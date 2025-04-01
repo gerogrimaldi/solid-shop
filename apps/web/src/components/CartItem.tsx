@@ -1,16 +1,7 @@
 "use client";
 
+import { CartItem } from "@/app/types/Items";
 import Image from "next/image";
-
-interface CartItem {
-  itemId: string;
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-}
 
 interface CartItemProps {
   item: CartItem;

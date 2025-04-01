@@ -12,27 +12,37 @@ export class CartsService {
   ) {}
 
 //  POST
-  async createCartItem(createCartItemDto: CreateCartItemDto) {
+async createCartItem(createCartItemDto: CreateCartItemDto) {
+  const user = await this.prisma.user.findUnique({
+    where: { id: createCartItemDto.userId },
+    select: { cartId: true },
+  });
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: createCartItemDto.userId },
-      select: { cartId: true }, // Solo traigo el cartid
-    });
-
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-
-    const cartItem = await this.prisma.cartItem.create({
-      data: {
-        cartId: user.cartId,
-        productId: createCartItemDto.productId,
-        quantity: createCartItemDto.quantity,
-      },
-    });
-
-    return "Se ha creado el siguiente item: \n" + cartItem;
+  if (!user) {
+    throw new NotFoundException('Usuario no encontrado');
   }
+
+  const cartItem = await this.prisma.cartItem.upsert({
+    where: {
+      cartId_productId: {
+        cartId: user.cartId,
+        productId: createCartItemDto.productId
+      }
+    },
+    create: {
+      cartId: user.cartId,
+      productId: createCartItemDto.productId,
+      quantity: createCartItemDto.quantity,
+    },
+    update: {
+      quantity: {
+        increment: createCartItemDto.quantity
+      }
+    },
+  });
+
+  return "Se ha actualizado el siguiente item: \n" + JSON.stringify(cartItem);
+}
 
   async findUserCart(userId: string) {
     if (!userId) {

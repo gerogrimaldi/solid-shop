@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateWishlistItemDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistItemDto } from './dto/update-wishlist.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class WishlistsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private productsService: ProductsService
+  ) {}
 
 //  POST
   async createWishlistItem(createWishlistItemDto: CreateWishlistItemDto) {
@@ -30,29 +34,45 @@ export class WishlistsService {
   }
 
   // GET
-  async findUserWishlist(userId: string) {
+async findUserWishlist(userId: string) {
+    if (!userId) {
+      throw new Error('User ID is missing');
+    }
+    // Buscar el usuario y obtener su wishlistId
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { wishlistId: true }, // Solo traigo el wishlist Id
+      select: { wishlistId: true },
     });
-
+  
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
-
-    return this.prisma.wishlistItem.findMany({
+  
+    // Obtener los items 
+    const wishlistItems = await this.prisma.wishlistItem.findMany({
       where: { wishlistId: user.wishlistId },
-      include: {
-        product: true,
-      },
+      select: {id:true, wishlistId:true, productId:true}
     });
+  
+    if (wishlistItems.length === 0) {
+      throw new NotFoundException('La Wishlist está vacía');
+    }
+  
+    // return
+    return this.productsService.findWishlistProducts(wishlistItems);
   }
 
-
-  // DELETE
-  async remove(itemId: string) {
-    return this.prisma.wishlistItem.delete({
-      where: { id: itemId },
-    })
+// DELETE
+  async removeFromWishlist(itemId: string) {
+    try {
+      return await this.prisma.wishlistItem.delete({
+        where: { id: itemId },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Wishlist item with id ${itemId} not found`);
+      }
+      throw new InternalServerErrorException(`Error removing Wishlist item: ${error.message}`);
+    }
   }
 }

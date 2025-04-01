@@ -12,9 +12,14 @@ export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Post()
-  createCartItem(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartsService.createCartItem(createCartItemDto);
+  @Post("items")
+  createCartItem(@Req() req, @Body() product: {productId: string, quantity: number}) {
+    const userId = req.user.sub; // Obtiene el userId del JWT
+    const { productId, quantity } = product; // Desestructura el objeto product
+    console.log('User ID from request:', req.user?.sub); // ← Verifica aquí
+    console.log('Product ID from request:', productId); // ← Verifica aquí
+    console.log('Quantity from request:', quantity); // ← Verifica aquí
+    return this.cartsService.createCartItem({userId, productId, quantity});
   }
 
   //podria recibir directamente el cartId?
@@ -41,6 +46,7 @@ export class CartsController {
   @AcceptedRoles('ADMIN', 'USER')
   @Delete('items/:itemId')
   async removeItem(@Param('itemId') itemId: string) {
+    console.log("Eliminando", itemId);
     return this.cartsService.removeFromCart( itemId);
   }
 }

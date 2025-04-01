@@ -65,8 +65,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ params }: ProductPageProps) =
         },
         body: JSON.stringify({
           productId: product.id,
-          stock: product.stock,
-          cartId: user.cartId, 
+          userId: user.userId,
+          quantity: 1, 
         }),
       });
 
@@ -91,7 +91,7 @@ const ProductPage: React.FC<ProductPageProps> = ({ params }: ProductPageProps) =
         },
         body: JSON.stringify({
           productId: product.id,
-          wishlistId: user.wishlistId, // Asumiendo que el wishlistId está en el JWT decodificado
+          userId: user.userId,
         }),
       });
 

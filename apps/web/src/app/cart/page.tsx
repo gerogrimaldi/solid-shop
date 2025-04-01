@@ -3,16 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItemComponent from "@/components/CartItem";
-
-interface CartItem {
-  itemId: string;
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  quantity: number;
-}
+import { CartItem } from "../types/Items";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -41,7 +32,6 @@ export default function CartPage() {
   // PATCH
   const updateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    console.log(itemId, newQuantity);
     try {
       const response = await fetch(`/api/carts/items`, {
         method: "PATCH",
@@ -50,7 +40,7 @@ export default function CartPage() {
         body: JSON.stringify({ id: itemId, quantity: newQuantity }),
       });
       if (!response.ok) throw new Error("Error al actualizar");
-      setCartItems(prev => prev.map(item => item.id === itemId ? { ...item, quantity: newQuantity } : item));
+      setCartItems(prev => prev.map(item => item.itemId === itemId ? { ...item, quantity: newQuantity } : item));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al actualizar");
     }
@@ -64,7 +54,7 @@ export default function CartPage() {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Error al eliminar");
-      setCartItems(prev => prev.filter(item => item.id !== itemId));
+      setCartItems(prev => prev.filter(item => item.itemId !== itemId));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al eliminar");
     }

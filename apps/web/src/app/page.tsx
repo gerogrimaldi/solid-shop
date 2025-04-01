@@ -8,8 +8,8 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center flex-grow p-8 text-center">
         <Image
           className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
+          src="/"
+          alt="Ecommerce logo"
           width={180}
           height={38}
           priority
@@ -23,9 +23,6 @@ export default function Home() {
           Ver Productos
         </Link>
       </main>
-      <footer className="bg-gray-800 text-white text-center p-4">
-        <p>&copy; 2025 Mi Ecommerce. Todos los derechos reservados.</p>
-      </footer>
     </div>
   );
 }
