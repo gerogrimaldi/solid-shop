@@ -21,3 +21,12 @@ declare module "next-auth" {
     roles?: string[];
   }
 }
+
+declare module "next-auth-jwt" {
+  interface JWT {
+    sub?: string;
+    username?: string;
+    email?: string;
+    roles?: string[];
+  }
+}

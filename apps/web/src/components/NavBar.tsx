@@ -12,6 +12,7 @@ const NavBar = () => {
 
   const isAuthenticated = status === "authenticated";
   const user = session?.user;
+  console.log("User session: ", session);
 
   const handleLogout = async () => {
     try {
@@ -33,7 +34,7 @@ const NavBar = () => {
         {isAuthenticated ? (
           <>
             {user?.roles?.includes("ADMIN") && (
-              <Link href="/admin" className="hover:underline">Admin</Link>
+              <Link href="/admin/dashboard" className="hover:underline">Admin</Link>
             )}
             <Link href="/cart" className="hover:underline">Carrito</Link>
             <Link href="/wishlist" className="hover:underline">Wishlist</Link>

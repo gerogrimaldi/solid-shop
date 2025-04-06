@@ -32,13 +32,19 @@ export default function LoginForm() {
     });
 
     if (!res.ok) {
-      router.push("/auth/unauthorized");
+      const errorData = await res.json().catch(() => null);
+      
+      const message = errorData?.statusCode === 401
+        ? errorData?.message : "Error al iniciar sesión";
+    
+      setFormError(message);
+      return;
     } else {
-      // Ahora que tenés la cookie, hacé signIn para que NextAuth guarde la sesión
+      // ya tengo la cookie con el jwt seteada por lo que solo hago el signIn de next-auth para que se almacene en la session
        await signIn("credentials", {
-         redirect: false, // si no querés redirigir automáticamente
+         redirect: false
        });
-      router.push("/dashboard");
+      router.push("/");
     }
 
   };
