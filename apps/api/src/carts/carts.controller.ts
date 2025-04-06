@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } fro
 import { CartsService } from './carts.service';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('carts')

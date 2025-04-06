@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
 
 @Controller('categories')
 export class CategoriesController {

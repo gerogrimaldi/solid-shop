@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
 
 

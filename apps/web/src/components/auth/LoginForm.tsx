@@ -1,14 +1,17 @@
-"use client"
+"use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormSchema, LoginFormData } from "@/app/types/schemas";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 
-interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => Promise<void>;
-}
+export default function LoginForm() {
+  const router = useRouter();
+  const [formError, setFormError] = useState("");
 
-export default function LoginForm({ onSubmit }: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -19,14 +22,25 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
   });
 
   const handleFormSubmit = async (data: LoginFormData) => {
-    try {
-      await onSubmit(data);
-    } catch (error) {
-      setError("root", {
-        type: "manual",
-        message: "Invalid email or password",
-      });
+    setFormError("");
+    // login directo al backend para que este setee las cookies
+    const res = await fetch("/api/authorization/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: data.email, password: data.password }),
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      router.push("/auth/unauthorized");
+    } else {
+      // Ahora que tenés la cookie, hacé signIn para que NextAuth guarde la sesión
+       await signIn("credentials", {
+         redirect: false, // si no querés redirigir automáticamente
+       });
+      router.push("/dashboard");
     }
+
   };
 
   return (
@@ -65,8 +79,8 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
           )}
         </div>
 
-        {errors.root && (
-          <p className="text-sm text-red-600 text-center">{errors.root.message}</p>
+        {formError && (
+          <p className="text-sm text-red-600 text-center">{formError}</p>
         )}
 
         <button
@@ -79,9 +93,11 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
         <div className="text-center text-sm text-gray-600">
           <span className="mr-1">Don't have an account?</span>
-          <a href="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </a>
+          <Link 
+                href={"/auth/signUp"} 
+                className="text-blue-600 hover:text-blue-700 font-medium">
+                Sign Up
+          </Link>
         </div>
       </form>
     </div>

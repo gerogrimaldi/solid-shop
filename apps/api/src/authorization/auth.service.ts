@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { User } from 'src/users/entities/user.entity';
 import { Response } from 'express';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -14,9 +15,36 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService
   ) {}
+    //  ########################################################################################################
+  // Funciones auxiliares para crear y setear los tokens en las cookies
+  private getTokens(payload: any) {
+    const accessToken = this.jwtService.sign(payload, {  
+      secret: jwtConstants.accessSecret,
+      expiresIn: jwtConstants.accessExpiresIn, 
+    });
+    const refreshToken = this.jwtService.sign(payload, { 
+      secret: jwtConstants.refreshSecret,
+      expiresIn: jwtConstants.refreshExpiresIn
+     });
+    return { accessToken, refreshToken };
+  }
+  
+  private setCookies(res: Response, accessToken: string, refreshToken: string) {
+    res.cookie('Authentication', accessToken, {
+      secure: true, //solo HTTPS
+      httpOnly: true, //previene XSS
+      expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+    })
+    res.cookie('RefreshToken', refreshToken, {
+      secure: true,      
+      httpOnly: true,     
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), //3 dias
+      sameSite: 'strict', // previene CSRF
+    });
+  }
 
   //  ########################################################################################################
-  // LOGIN 
+  // LOGIN Y REFRESH
   async login(user: any, res: Response) {
     // el payload genera los claims del token
     const payload = { 
@@ -25,30 +53,31 @@ export class AuthService {
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
     };
-    const access_token = await this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET || "supersecret",
-      expiresIn: '30m'
-    })
-    const refresh_token = await this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET2 || "supersecret2",
-      expiresIn: '3h'
-    })
-    res.cookie('Authentication', access_token, {
-      secure: true, //solo HTTPS
-      httpOnly: true, //previene XSS
-      expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
-    })
-    res.cookie('RefreshToken', refresh_token, {
-      secure: true,      
-      httpOnly: true,     
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), //3 dias
-      sameSite: 'strict', // previene CSRF
-    });
-    return { access_token, refresh_token } ;
+    const tokens = this.getTokens(payload);
+    this.setCookies(res, tokens.accessToken, tokens.refreshToken);
+
+    return { message: 'Login exitoso'} ;
+  }
+
+  // REFRESH
+  async refreshToken(user: any, res: Response) {
+    // el payload genera los claims del token
+    const payload = { 
+      sub: user.id,
+      username: user.username, 
+      email: user.email ,
+      roles: Array.isArray(user.Role) ? user.Role : [user.Role],
+    };
+    const tokens = this.getTokens(payload);
+    this.setCookies(res, tokens.accessToken, tokens.refreshToken);
+
+    return { message: 'Login exitoso'} ;
   }
 
   // LOGOUT
   async logout(res: Response) {
+    console.log("inside logout")
+
       res.clearCookie('Authentication');
       res.clearCookie('RefreshToken');
       res.status(200);
@@ -85,11 +114,14 @@ export class AuthService {
       });
 
       console.log("inside verifiToken")
+
       return res.json({
         username: payload.username,
         email: payload.email,
-        roles: payload.roles
+        roles: payload.roles,
+        id: payload.sub
       });
+      
     } catch (error) {
       return res.status(401).json({ error: 'Token inválido' });
     }

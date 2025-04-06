@@ -4,9 +4,20 @@ import type { NextConfig } from "next";
 const nextConfig = {
   async rewrites() {
     return [
+      //Proxys para el backend
+      // rutas de next Auth
+      {
+        source: "/api/auth/:path*",
+        destination: "/api/auth/:path*",
+      },
+      // Rutas de backend Api
+      {
+        source: "/api/authorization/:path*",
+        destination: `${process.env.BACKEND_URL}/authorization/:path*`,
+      },
       {
         source: "/api/:path*",
-        destination: "http://localhost:8000/api/:path*", // Redirige todo lo de /api
+        destination: `${process.env.BACKEND_URL}/:path*`,
       },
     ];
   },

@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } fro
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistItemDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistItemDto } from './dto/update-wishlist.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('wishlists')
