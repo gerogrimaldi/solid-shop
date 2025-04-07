@@ -1,20 +1,28 @@
-import { IsEmail, IsString, MinLength, IsEnum, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsEnum,
+  IsNotEmpty,
+} from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-@Expose()
+@Exclude() // Esto si activa el modo seguro
 export class UserResponseDto {
-    @IsNotEmpty()
-    @IsString()
+  @Expose()
+  @IsNotEmpty()
+  @IsString()
   username: string;
 
+  @Expose()
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
+  @Expose()
   @IsNotEmpty()
   @IsString()
   role: string;
 
-  @Exclude() // 🔹 Evita que la contraseña se exponga al transformar el objeto
   password: string;
 }
