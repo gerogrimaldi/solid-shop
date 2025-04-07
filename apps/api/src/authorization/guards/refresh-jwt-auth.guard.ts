@@ -1,4 +1,3 @@
-// jwt-auth.guard.ts
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
@@ -19,6 +18,7 @@ export class RefreshJwtGuard extends AuthGuard('refresh-jwt') {
     }
 
     try {
+      console.log("Inside refreshGuard try")
       // Verifico token
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET2 || 'supersecret',

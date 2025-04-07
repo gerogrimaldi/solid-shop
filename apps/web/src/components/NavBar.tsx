@@ -12,7 +12,6 @@ const NavBar = () => {
 
   const isAuthenticated = status === "authenticated";
   const user = session?.user;
-  console.log("User session: ", session);
 
   const handleLogout = async () => {
     try {

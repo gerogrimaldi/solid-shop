@@ -3,8 +3,12 @@ import { Exclude, Expose } from 'class-transformer';
 
 @Expose()
 export class UserResponseDto {
-    @IsNotEmpty()
-    @IsString()
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+  
+  @IsNotEmpty()
+  @IsString()
   username: string;
 
   @IsNotEmpty()
@@ -15,6 +19,14 @@ export class UserResponseDto {
   @IsString()
   role: string;
 
-  @Exclude() // 🔹 Evita que la contraseña se exponga al transformar el objeto
+  @IsNotEmpty()
+  @IsString()
+  wishListId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  cartId: string;
+
+  @Exclude() // evita que la contraseña se exponga al transformar el objeto
   password: string;
 }

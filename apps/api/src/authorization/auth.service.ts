@@ -30,6 +30,7 @@ export class AuthService {
   }
   
   private setCookies(res: Response, accessToken: string, refreshToken: string) {
+
     res.cookie('Authentication', accessToken, {
       secure: true, //solo HTTPS
       httpOnly: true, //previene XSS
@@ -53,6 +54,7 @@ export class AuthService {
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
     };
+    console.log("inside login payload: ", payload)
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
@@ -63,11 +65,12 @@ export class AuthService {
   async refreshToken(user: any, res: Response) {
     // el payload genera los claims del token
     const payload = { 
-      sub: user.id,
+      sub: user.sub, //campo distinto al login ya que lee sub del jwt, no user.id del User type
       username: user.username, 
       email: user.email ,
-      roles: Array.isArray(user.Role) ? user.Role : [user.Role],
+      roles: Array.isArray(user.roles) ? user.roles : [user.roles], //campo distinto al login ya que lee roles del jwt, no Role del user type
     };
+    console.log("inside refreshToken payload: ", payload)
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
@@ -113,14 +116,7 @@ export class AuthService {
         secret: process.env.JWT_SECRET || "supersecret"
       });
 
-      console.log("inside verifiToken")
-
-      return res.json({
-        username: payload.username,
-        email: payload.email,
-        roles: payload.roles,
-        id: payload.sub
-      });
+      return res.json(payload);
       
     } catch (error) {
       return res.status(401).json({ error: 'Token inválido' });
