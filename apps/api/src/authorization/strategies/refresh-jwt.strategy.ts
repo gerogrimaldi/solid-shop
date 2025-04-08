@@ -18,7 +18,9 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'refresh-jwt'
         userId: payload.sub, 
         username: payload.username,
         email: payload.email,
-        roles: payload.roles 
+        roles: payload.roles,
+        cartId: payload.cartId,
+        wishlistId: payload.wishlistId 
      };
   }
 }

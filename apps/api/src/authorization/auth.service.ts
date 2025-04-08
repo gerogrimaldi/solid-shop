@@ -53,8 +53,9 @@ export class AuthService {
       username: user.username, 
       email: user.email ,
       roles: Array.isArray(user.Role) ? user.Role : [user.Role],
+      cartId: user.cartId,
+      wishlistId: user.wishlistId,
     };
-    console.log("inside login payload: ", payload)
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
@@ -69,6 +70,8 @@ export class AuthService {
       username: user.username, 
       email: user.email ,
       roles: Array.isArray(user.roles) ? user.roles : [user.roles], //campo distinto al login ya que lee roles del jwt, no Role del user type
+      cartId: user.cartId,
+      wishlistId: user.wishlistId,
     };
     console.log("inside refreshToken payload: ", payload)
     const tokens = this.getTokens(payload);
@@ -100,7 +103,7 @@ export class AuthService {
     }
 
   // aca ya nno devuelve la contraseña del user, si los demas datos
-    const {password, ...result} = user;
+    const {password,createdAt,updatedAt, ...result} = user;
     return result;
   }
 

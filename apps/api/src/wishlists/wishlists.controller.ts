@@ -13,16 +13,18 @@ export class WishlistsController {
 
   @AcceptedRoles('ADMIN', 'USER')
   @Post("items")
-  createWishlistItem(@Body() createWishlistItemDto: CreateWishlistItemDto) {
-    return this.wishlistsService.createWishlistItem(createWishlistItemDto);
+  createWishlistItem(@Req() req, @Body() product: {productId: string}) {
+    const wishlistId = req.user.wishlistId; // Obtiene el wishlistId del JWT
+    const {productId} = product;
+    return this.wishlistsService.createWishlistItem({wishlistId, productId}); 
   }
 
   //podria recibir directamente el wishlistId?
   @AcceptedRoles('ADMIN', 'USER')
   @Get("items")
   findUserWishlist(@Req() req) {
-    const userId = req.user.sub; // Obtiene el userId del JWT
-    return this.wishlistsService.findUserWishlist(userId);
+    const wishlistId = req.user.wishlistId; // Obtiene el userId del JWT
+    return this.wishlistsService.findUserWishlist(wishlistId);
   }
 
   @AcceptedRoles('ADMIN', 'USER')

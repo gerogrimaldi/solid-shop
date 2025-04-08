@@ -13,19 +13,11 @@ export class WishlistsService {
 
 //  POST
   async createWishlistItem(createWishlistItemDto: CreateWishlistItemDto) {
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: createWishlistItemDto.userId },
-      select: { wishlistId: true }, // Solo traigo el wishlist Id
-    });
-
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
+    console.log("Productid: ", createWishlistItemDto.productId);
 
     const wishlistItem = await this.prisma.wishlistItem.create({
       data: {
-        wishlistId: user.wishlistId,
+        wishlistId: createWishlistItemDto.wishlistId,
         productId: createWishlistItemDto.productId,
       },
     });
@@ -34,23 +26,14 @@ export class WishlistsService {
   }
 
   // GET
-async findUserWishlist(userId: string) {
-    if (!userId) {
-      throw new Error('User ID is missing');
+async findUserWishlist(wishlistId: string) {
+    if (!wishlistId) {
+      throw new Error('Wishlist ID is missing');
     }
-    // Buscar el usuario y obtener su wishlistId
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { wishlistId: true },
-    });
-  
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-  
+
     // Obtener los items 
     const wishlistItems = await this.prisma.wishlistItem.findMany({
-      where: { wishlistId: user.wishlistId },
+      where: { wishlistId: wishlistId },
       select: {id:true, wishlistId:true, productId:true}
     });
   

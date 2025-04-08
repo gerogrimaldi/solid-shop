@@ -10,6 +10,10 @@ const nextConfig = {
         source: "/api/auth/:path*",
         destination: "/api/auth/:path*",
       },
+      {
+        source: "/api/refresh-token/:path*",
+        destination: "/api/refresh-token/:path*",
+      },
       // Rutas de backend Api
       {
         source: "/api/authorization/:path*",

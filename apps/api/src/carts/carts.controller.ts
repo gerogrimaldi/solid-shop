@@ -14,18 +14,18 @@ export class CartsController {
   @AcceptedRoles('ADMIN', 'USER')
   @Post("items") //el DTO se usa en el service ya que desde el front no tengo el userId para enviar
   createCartItem(@Req() req, @Body() product: {productId: string, quantity: number}) {
-    const userId = req.user.sub; // Obtiene el userId del JWT
+    const cartId = req.user.cartId; // Obtiene el cartId del JWT
     const { productId, quantity } = product; // Desestructura el objeto product
-    return this.cartsService.createCartItem({userId, productId, quantity});
+    return this.cartsService.createCartItem({cartId, productId, quantity});
   }
 
   //podria recibir directamente el cartId?
   @AcceptedRoles('ADMIN', 'USER')
   @Get("items")
   findUserCart(@Req() req) {
-    const userId = req.user.sub; // Obtiene el userId del JWT
+    const cartId = req.user.cartId; // Obtiene el cartId del JWT
     // console.log('User ID from request:', req.user?.sub); // ← Verifica aquí
-    return this.cartsService.findUserCart(userId);
+    return this.cartsService.findUserCart(cartId);
   }
 
   //podria recibir directamente el itemId?

@@ -13,24 +13,16 @@ export class CartsService {
 
 //  POST
 async createCartItem(createCartItemDto: CreateCartItemDto) {
-  const user = await this.prisma.user.findUnique({
-    where: { id: createCartItemDto.userId },
-    select: { cartId: true },
-  });
-
-  if (!user) {
-    throw new NotFoundException('Usuario no encontrado');
-  }
 
   const cartItem = await this.prisma.cartItem.upsert({
     where: {
       cartId_productId: {
-        cartId: user.cartId,
+        cartId: createCartItemDto.cartId,
         productId: createCartItemDto.productId
       }
     },
     create: {
-      cartId: user.cartId,
+      cartId: createCartItemDto.cartId,
       productId: createCartItemDto.productId,
       quantity: createCartItemDto.quantity,
     },
@@ -44,23 +36,13 @@ async createCartItem(createCartItemDto: CreateCartItemDto) {
   return "Se ha actualizado el siguiente item: \n" + JSON.stringify(cartItem);
 }
 
-  async findUserCart(userId: string) {
-    if (!userId) {
-      throw new Error('User ID is missing');
+  async findUserCart(cartId: string) {
+    if (!cartId) {
+      throw new Error('Cart ID is missing');
     }
-    // Buscar el usuario y obtener su cartId
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { cartId: true },
-    });
-  
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-  
     // Obtener los items 
     const cartItems = await this.prisma.cartItem.findMany({
-      where: { cartId: user.cartId },
+      where: { cartId: cartId },
       select: {id:true, cartId:true, productId:true, quantity:true}
     });
   

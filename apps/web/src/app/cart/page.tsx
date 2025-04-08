@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItemComponent from "@/components/Items/CartItem";
 import { CartItem } from "../types/Items";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -15,7 +16,7 @@ export default function CartPage() {
     // GET
     const fetchCart = async () => {
       try {
-        const response = await fetch("/api/carts/items", { credentials: "include" });
+        const response = await fetchWithAuth("/api/carts/items");
         if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setCartItems(data);

@@ -8,6 +8,8 @@ declare module "next-auth" {
     username?: string;
     email?: string;
     roles?: string[];
+    cartId?: string;
+    wishlistId?: string;
   }
 
   interface Session {
@@ -15,18 +17,24 @@ declare module "next-auth" {
   }
 
   interface JWT {
-    sub?: string;
+    id?: string;
     username?: string;
     email?: string;
     roles?: string[];
+    cartId?: string;
+    wishlistId?: string;
   }
+
 }
 
 declare module "next-auth-jwt" {
   interface JWT {
-    sub?: string;
+    id?: string;
     username?: string;
     email?: string;
     roles?: string[];
+    cartId?: string;
+    wishlistId?: string;
   }
+
 }

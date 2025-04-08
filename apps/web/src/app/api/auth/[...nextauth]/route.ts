@@ -5,7 +5,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 
 
-
 // NEXT AUTH SOLO SE USA PARA ALMACENAR SESION
 //  la logica de validaciones se hace en el backend con cookies
 export const authOptions: NextAuthOptions = ({
@@ -43,6 +42,8 @@ export const authOptions: NextAuthOptions = ({
             token.roles = user.roles;
             token.email = user.email;
             token.sub = user.id;
+            token.cartId = user.cartId;
+            token.wishlistId = user.wishlistId;
           }
         
           return token; // token sin actualizar
@@ -57,8 +58,12 @@ export const authOptions: NextAuthOptions = ({
                     username: token.username as string,
                     email: token.email as string,
                     roles: token.roles as string[],
-                    };
+                    cartId: token.cartId as string,
+                    wishlistId: token.wishlistId as string,
+                  };
                 }
+                console.log("session", session);
+                console.log("token", token);
             return session;
 
             }catch (err) {
