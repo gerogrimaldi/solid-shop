@@ -1,32 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistItemDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistItemDto } from './dto/update-wishlist.dto';
-import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('wishlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Post()
-  createWishlistItem(@Body() createWishlistItemDto: CreateWishlistItemDto) {
-    return this.wishlistsService.createWishlistItem(createWishlistItemDto);
+  @Post("items")
+  createWishlistItem(@Req() req, @Body() product: {productId: string}) {
+    const wishlistId = req.user.wishlistId; // Obtiene el wishlistId del JWT
+    const {productId} = product;
+    return this.wishlistsService.createWishlistItem({wishlistId, productId}); 
   }
 
   //podria recibir directamente el wishlistId?
   @AcceptedRoles('ADMIN', 'USER')
-  @Get(':userId')
-  findUserWishlist(@Param('userId') userId: string) {
-    return this.wishlistsService.findUserWishlist(userId);
+  @Get("items")
+  findUserWishlist(@Req() req) {
+    const wishlistId = req.user.wishlistId; // Obtiene el userId del JWT
+    return this.wishlistsService.findUserWishlist(wishlistId);
   }
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Delete(':itemId')
+  @Delete('items/:itemId')
   remove(@Param('itemId') itemId: string) {
-    return this.wishlistsService.remove(itemId);
+    return this.wishlistsService.removeFromWishlist(itemId);
   }
 }

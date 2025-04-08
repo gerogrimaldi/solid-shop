@@ -11,15 +11,15 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
-
+  constructor( private readonly categoriesService: CategoriesService) {}
+  
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -40,7 +40,8 @@ export class CategoriesController {
   async getProductsByCategory(@Param('name') name: string) {
     return this.categoriesService.getProductsByCategory(name);
   }
-
+  
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Patch(':id')
   update(
@@ -49,7 +50,8 @@ export class CategoriesController {
   ) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
-
+  
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @AcceptedRoles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {

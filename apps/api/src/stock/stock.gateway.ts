@@ -7,10 +7,10 @@ export class StockGateway {
   server: Server;
 
   // Este método manda una alerta cuando el stock sea igual o menor a 5
-  updateStock(productId: string, newStock: number) {
+  updateStock(productId: string, productName: string, newStock: number) {
     if (newStock <= 5) {
-      console.log('Emitiendo alerta de bajo stock', { productId, newStock });
-      this.server.emit('lowStockAlert', { productId, newStock });
+      console.log('Emitiendo alerta de bajo stock', { productId, productName, newStock });
+      this.server.emit('lowStockAlert', { productId, productName, newStock });
     }
   }
 }

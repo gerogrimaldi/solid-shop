@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('carts')
@@ -12,28 +12,38 @@ export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Post()
-  createCartItem(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartsService.createCartItem(createCartItemDto);
+  @Post("items") //el DTO se usa en el service ya que desde el front no tengo el userId para enviar
+  createCartItem(@Req() req, @Body() product: {productId: string, quantity: number}) {
+    const cartId = req.user.cartId; // Obtiene el cartId del JWT
+    const { productId, quantity } = product; // Desestructura el objeto product
+    return this.cartsService.createCartItem({cartId, productId, quantity});
   }
 
   //podria recibir directamente el cartId?
   @AcceptedRoles('ADMIN', 'USER')
-  @Get(':userId')
-  findUserCart(@Param('userId') userId: string) {
-    return this.cartsService.findUserCart(userId);
+  @Get("items")
+  findUserCart(@Req() req) {
+    const cartId = req.user.cartId; // Obtiene el cartId del JWT
+    // console.log('User ID from request:', req.user?.sub); // ← Verifica aquí
+    return this.cartsService.findUserCart(cartId);
   }
 
   //podria recibir directamente el itemId?
   @AcceptedRoles('ADMIN', 'USER')
-  @Patch()
-  updateUserCart(@Body() updateCartItemDto: UpdateCartItemDto) {
-    return this.cartsService.updateUserCart(updateCartItemDto);
+  @Patch('items')
+  async updateItem(
+    @Body('id') itemId: string,
+    @Body('quantity') quantity: number,
+  ) {
+    console.log('Item ID:', itemId); // ← Verifica aquí
+    console.log('Quantity:', quantity); // ← Verifica aquí
+    return this.cartsService.updateUserCart(itemId, quantity);
   }
 
   @AcceptedRoles('ADMIN', 'USER')
-  @Delete(':itemId')
-  remove(@Param('itemId') itemId: string) {
-    return this.cartsService.remove(itemId);
+  @Delete('items/:itemId')
+  async removeItem(@Param('itemId') itemId: string) {
+    console.log("Eliminando", itemId);
+    return this.cartsService.removeFromCart( itemId);
   }
 }
