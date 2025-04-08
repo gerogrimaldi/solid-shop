@@ -103,7 +103,10 @@ export class UsersService {
     try {
       const updatedUser = await this.prisma.user.update({
         where: { id },
-        data: updateUserDto,
+        data: {
+          ...updateUserDto,
+          updatedAt: new Date(),
+        },
       });
   
       return { message: `User with id: ${updatedUser.id} updated successfully` };

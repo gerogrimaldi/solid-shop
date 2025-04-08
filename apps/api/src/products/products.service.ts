@@ -95,12 +95,14 @@ export class ProductsService {
   async update(id: string, updateProductDto: UpdateProductDto) {
     const updatedProduct = await this.prisma.product.update({
       where: { id },
-      data: updateProductDto,
-    });
+      data: {
+        ...updateProductDto,
+        updatedAt: new Date(),
+      },    });
 
     // Si el stock fue actualizado, emitir el evento
     if (updateProductDto.stock !== undefined) {
-      this.stockGateway.updateStock(id, updateProductDto.stock);
+      this.stockGateway.updateStock(id, updatedProduct.name, updateProductDto.stock);
     }
     return updatedProduct;
   }

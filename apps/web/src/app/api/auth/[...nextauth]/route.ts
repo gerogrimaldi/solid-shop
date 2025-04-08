@@ -62,8 +62,6 @@ export const authOptions: NextAuthOptions = ({
                     wishlistId: token.wishlistId as string,
                   };
                 }
-                console.log("session", session);
-                console.log("token", token);
             return session;
 
             }catch (err) {
