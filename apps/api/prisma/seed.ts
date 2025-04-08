@@ -1,4 +1,4 @@
-import { PrismaClient, Roles } from "@prisma/client";
+import { PrismaClient, Roles } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -20,7 +20,7 @@ async function main() {
 
   // Obtener categorías con sus IDs
   const categoryMap = Object.fromEntries(
-    allCategories.map((category) => [category.name, category.id])
+    allCategories.map((category) => [category.name, category.id]),
   );
 
   // Crear productos en categorías correctas
@@ -121,7 +121,7 @@ async function main() {
     ],
   });
 
-  console.log("Seed completado exitosamente");
+  console.log('Seed completado exitosamente');
 }
 
 main()

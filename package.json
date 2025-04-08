@@ -32,6 +32,8 @@
     "@nestjs/common": "^11.0.12",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-socket.io": "^11.0.12",
+    "@nestjs/websockets": "^11.0.12",
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
     "passport": "^0.7.0",

@@ -11,15 +11,15 @@ import { UsersModule } from './users/users.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { AuthModule } from './authorization/auth.module';
 import { S3Module } from './upload/s3.module';
-import { ThrottlerModule } from '@nestjs/throttler';
-
+import { StockGateway } from './stock/stock.gateway';
+import { StockModule } from './stock/stock.module';
 
 @Module({
-  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule, WishlistsModule, AuthModule, S3Module, ThrottlerModule],
+  imports: [ProductsModule, CategoriesModule, CognitoAuthModule, CartsModule, UsersModule, WishlistsModule, AuthModule, S3Module, StockModule],
   // imports: [LinksModule, ServeStaticModule.forRoot({
   //   rootPath: join  (__dirname + '/../../web/next'),
   // })],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StockGateway],
 })
 export class AppModule {}

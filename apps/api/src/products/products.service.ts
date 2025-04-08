@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { StockGateway } from 'src/stock/stock.gateway';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly stockGateway: StockGateway,
+  ) {}
 
   async create(newProduct: CreateProductDto) {
     return this.prisma.product.create({
@@ -89,10 +93,16 @@ export class ProductsService {
   }
   
   async update(id: string, updateProductDto: UpdateProductDto) {
-    return this.prisma.product.update({
+    const updatedProduct = await this.prisma.product.update({
       where: { id },
       data: updateProductDto,
     });
+
+    // Si el stock fue actualizado, emitir el evento
+    if (updateProductDto.stock !== undefined) {
+      this.stockGateway.updateStock(id, updateProductDto.stock);
+    }
+    return updatedProduct;
   }
 
   async remove(id: string) {
