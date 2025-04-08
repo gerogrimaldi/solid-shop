@@ -5,7 +5,7 @@ export class CreateCartItemDto {
     @IsNotEmpty()
     @IsUUID()
     @ApiProperty()
-    userId: string;
+    cartId: string;
 
     @IsNotEmpty()
     @IsUUID()

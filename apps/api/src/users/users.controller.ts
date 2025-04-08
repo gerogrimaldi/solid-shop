@@ -12,8 +12,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
-import { AcceptedRoles } from 'src/auth/custom-decorators/roles.decorator';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
 //@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')

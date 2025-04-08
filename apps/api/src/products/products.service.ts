@@ -65,33 +65,93 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
-    try {
-      const existingProduct = await this.prisma.product.findUnique({
-        where: { id },
-      });
-      if (!existingProduct) {
-        throw new NotFoundException(`Product with id ${id} not found`);
-      }
+  // CARRITO
+  async findCartProducts(cartItems: {id: string, productId: string, cartId:string, quantity: number }[]) {
 
-      const updatedProduct = await this.prisma.product.update({
-        where: { id },
-        data: updateProductDto,
-      });
-
-      // emite el  evento si el stock fue actualizado
-      if (updateProductDto.stock !== undefined) {
-        this.stockGateway.updateStock(id, updateProductDto.stock);
+    // obtengo arreglo de ids de producto
+    const productIds = cartItems.map(item => item.productId);
+    // encuentro los productos
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select:{
+        id: true,
+        name: true,
+        description: true,
+        categoryId: true,
+        price: true,
+        stock: true,
+        imageUrl: true,
       }
-
-      return updatedProduct;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new InternalServerErrorException(error.message);
-      }
-      throw new InternalServerErrorException('An unexpected error occurred');
+    });
+  
+    if (products.length === 0) {
+      throw new NotFoundException('No se encontraron productos en el carrito');
     }
+    // devuelvo nuevo arreglo con producto y su cantidad en el carrito
+    return cartItems.map(cartItem => {
+      const product = products.find(p => p.id === cartItem.productId);
+      return product ? { itemId:cartItem.id, ...product, quantity: cartItem.quantity } : null;
+    }).filter(Boolean); // Filtrar productos nulos
   }
+  
+  // WISHLIST
+  async findWishlistProducts(wishlistItems: {id: string, productId: string, wishlistId:string}[]) {
+    // obtengo arreglo de ids de producto
+    const productIds = wishlistItems.map(item => item.productId);
+    // encuentro los productos
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select:{
+        id: true,
+        name: true,
+        description: true,
+        categoryId: true,
+        price: true,
+        stock: true,
+        imageUrl: true,
+      }
+    });
+  
+    if (products.length === 0) {
+      throw new NotFoundException('No se encontraron productos en la wishlist');
+    }
+    // devuelvo nuevo arreglo con productoS
+    return wishlistItems.map(wishlistItem => {
+      const product = products.find(p => p.id === wishlistItem.productId); //asocio cada producto con su wishlistItem
+      return product ? { itemId:wishlistItem.id, ...product } : null;
+    }).filter(Boolean); // Filtrar productos nulos
+  }
+  
+async update(id: string, updateProductDto: UpdateProductDto) {
+  try {
+    const updatedProduct = await this.prisma.product.upsert({
+      where: { id },
+      update: {
+        ...updateProductDto,
+        updatedAt: new Date(),
+      },
+      create: {
+        ...updateProductDto,
+        id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Emitir evento si el stock fue actualizado
+    if (updateProductDto.stock !== undefined) {
+      this.stockGateway.updateStock(id, updatedProduct.name, updateProductDto.stock);
+    }
+
+    return updatedProduct;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new InternalServerErrorException(error.message);
+    }
+    throw new InternalServerErrorException('An unexpected error occurred');
+  }
+}
+
 
   async remove(id: string) {
     try {
