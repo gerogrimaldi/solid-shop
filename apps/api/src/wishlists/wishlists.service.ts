@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateWishlistItemDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistItemDto } from './dto/update-wishlist.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -13,16 +13,23 @@ export class WishlistsService {
 
 //  POST
   async createWishlistItem(createWishlistItemDto: CreateWishlistItemDto) {
-    console.log("Productid: ", createWishlistItemDto.productId);
-
-    const wishlistItem = await this.prisma.wishlistItem.create({
+    const existing = await this.prisma.wishlistItem.findFirst({
+      where: {
+        wishlistId: createWishlistItemDto.wishlistId,
+        productId: createWishlistItemDto.productId,
+      },
+    });
+  
+    if (existing) {
+      throw new BadRequestException('Este producto ya está en tu lista de deseos.');
+    }
+  
+    return this.prisma.wishlistItem.create({
       data: {
         wishlistId: createWishlistItemDto.wishlistId,
         productId: createWishlistItemDto.productId,
       },
     });
-
-    return "Se ha creado el siguiente item: \n" + wishlistItem;
   }
 
   // GET

@@ -56,6 +56,7 @@ export class CognitoAuthService {
         Username: confirmDto.email,
         ConfirmationCode: confirmDto.pin,
       });
+      
       return await this.cognitoClient.send(command);
     } catch (error: any) {
       throw new BadRequestException(error.message || 'Confirmation failed');

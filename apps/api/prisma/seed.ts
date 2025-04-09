@@ -8,7 +8,7 @@ async function main() {
   // Crear categorías
   await prisma.category.createMany({
     data: [
-      { name: "Electrónica" , imageUrl: "https://grimaldi-test-bucket.s3.us-east-1.amazonaws.com/laptop.webp" },
+      { name: "Electronica" , imageUrl: "https://grimaldi-test-bucket.s3.us-east-1.amazonaws.com/laptop.webp" },
       { name: "Ropa" , imageUrl: "https://grimaldi-test-bucket.s3.us-east-1.amazonaws.com/zapatillas.webp" },
       { name: "Hogar" , imageUrl: "https://grimaldi-test-bucket.s3.us-east-1.amazonaws.com/aspiradora.webp" },
       { name: "Deportes" , imageUrl: "https://grimaldi-test-bucket.s3.us-east-1.amazonaws.com/mancuerna.webp" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { CartItem } from "@/app/types/Items";
+import { CartItem } from "@/types/Items";
 import Image from "next/image";
 
 interface CartItemProps {

@@ -24,7 +24,6 @@ export class CartsController {
   @Get("items")
   findUserCart(@Req() req) {
     const cartId = req.user.cartId; // Obtiene el cartId del JWT
-    // console.log('User ID from request:', req.user?.sub); // ← Verifica aquí
     return this.cartsService.findUserCart(cartId);
   }
 
@@ -35,15 +34,12 @@ export class CartsController {
     @Body('id') itemId: string,
     @Body('quantity') quantity: number,
   ) {
-    console.log('Item ID:', itemId); // ← Verifica aquí
-    console.log('Quantity:', quantity); // ← Verifica aquí
     return this.cartsService.updateUserCart(itemId, quantity);
   }
 
   @AcceptedRoles('ADMIN', 'USER')
   @Delete('items/:itemId')
   async removeItem(@Param('itemId') itemId: string) {
-    console.log("Eliminando", itemId);
     return this.cartsService.removeFromCart( itemId);
   }
 }

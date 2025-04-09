@@ -73,7 +73,6 @@ export class AuthService {
       cartId: user.cartId,
       wishlistId: user.wishlistId,
     };
-    console.log("inside refreshToken payload: ", payload)
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
@@ -82,8 +81,6 @@ export class AuthService {
 
   // LOGOUT
   async logout(res: Response) {
-    console.log("inside logout")
-
       res.clearCookie('Authentication');
       res.clearCookie('RefreshToken');
       res.status(200);

@@ -47,6 +47,18 @@ export class ProductsService {
     }
   }
 
+  async findLimited(limit: number) {
+    try {
+      const products = await this.prisma.product.findMany({
+       take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
+      return products;
+    } catch (error) {
+      throw new Error('Error retrieving products');
+    }
+  }
+
   async findOne(id: string) {
     if (!id) {
       throw new BadRequestException('Product ID is required');
@@ -131,8 +143,13 @@ async update(id: string, updateProductDto: UpdateProductDto) {
         updatedAt: new Date(),
       },
       create: {
-        ...updateProductDto,
         id,
+        name: updateProductDto.name || '',
+        description: updateProductDto.description || '',
+        price: updateProductDto.price || 0,
+        stock: updateProductDto.stock || 0,
+        categoryId: updateProductDto.categoryId || '',
+        imageUrl: updateProductDto.imageUrl || '',
         createdAt: new Date(),
         updatedAt: new Date(),
       },

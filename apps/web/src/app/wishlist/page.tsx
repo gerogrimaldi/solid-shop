@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WishlistItemComponent from "@/components/Items/WishListItem";
-import { WishlistItem } from "../types/Items";
+import { WishlistItem } from "../../types/Items";
 
 export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
@@ -18,7 +18,6 @@ export default function WishlistPage() {
         if (!response.ok) throw new Error("Error al cargar la lista de favoritos");
         const data = await response.json();
         setWishlistItems(data);
-        console.log(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
       } finally {

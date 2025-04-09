@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupFormSchema, SignupFormData } from "@/app/types/schemas";
+import { SignupFormSchema, SignupFormData } from "@/types/schemas";
 import { useState } from "react";
 
 interface SignUpFormProps {

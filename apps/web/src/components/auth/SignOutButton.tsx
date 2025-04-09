@@ -1,6 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
 
 export function SignOutButton() {
   async function handleSignOut() {
@@ -18,13 +19,20 @@ export function SignOutButton() {
   }
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); handleSignOut(); }}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSignOut();
+      }}
+    >
       <button
-              type="submit"
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-2xl shadow-md transition duration-200 disabled:opacity-50"
-            >
-              Cerrar sesión
-            </button>    
-      </form>
+        type="submit"
+        title="Cerrar sesión"
+        className="flex items-center gap-1 px-4 py-2 bg-neutral-900 text-white rounded-full hover:bg-neutral-800 transition-colors"
+      >
+        <LogOut className="w-4 h-4" />
+        Cerrar sesión
+      </button>
+    </form>
   );
 }

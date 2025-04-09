@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { WishlistItem } from "@/app/types/Items";
+import { WishlistItem } from "@/types/Items";
 
 interface WishlistItemProps {
   item: WishlistItem;
@@ -26,7 +26,7 @@ export default function WishlistItemComponent({ item, removeItem, addToCart }: W
         
         <div className="flex mt-4 space-x-3">
           <button 
-            onClick={() => removeItem(item.id)}
+            onClick={() => removeItem(item.itemId)}
             className="text-blue-500 hover:text-blue-700 text-sm"
           >
             Eliminar

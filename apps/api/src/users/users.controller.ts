@@ -11,11 +11,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
 import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
-//@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@AcceptedRoles('ADMIN')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -25,7 +26,6 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  // @AcceptedRoles('ADMIN')
   @Get()
   findAllUsers() {
     return this.usersService.findAll();
@@ -41,7 +41,6 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  //@AcceptedRoles('ADMIN')
   @Delete(':id')
   removeUser(@Param('id') id: string) {
     return this.usersService.remove(id);

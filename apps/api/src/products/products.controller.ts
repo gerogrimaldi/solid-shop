@@ -33,6 +33,12 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  // se añade esta funcion como mock para el home
+  @Get("limited/:limit")
+  findLimited(@Param('limit') limit: string) {
+    return this.productsService.findLimited(parseInt(limit));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);

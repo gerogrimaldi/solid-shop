@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItemComponent from "@/components/Items/CartItem";
-import { CartItem } from "../types/Items";
+import { CartItem } from "../../types/Items";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function CartPage() {
