@@ -2,7 +2,7 @@
 
 import { Product } from "@/types/product";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { motion } from "framer-motion";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useState } from "react";
@@ -36,6 +36,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
                 src={product.imageUrl || '/placeholder.jpg'}
                 alt={product.name}
                 layout="fill"
+                sizes="(max-width: 768px) 100vw, 33vw"
                 objectFit="contain"
                 className="transition-transform duration-500"
               />

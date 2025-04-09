@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
-import NavBar from "@/components/NavBar";
 import ProductCard from "@/components/cards/ProductCard";
 import { useEffect, useState } from "react";
 import { Product } from "@/types/product";

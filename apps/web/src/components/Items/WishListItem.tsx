@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { WishlistItem } from "@/types/Items";
 
 interface WishlistItemProps {
@@ -14,7 +14,9 @@ export default function WishlistItemComponent({ item, removeItem, addToCart }: W
         <Image
           src={item.imageUrl || "/placeholder-product.png"}
           alt={item.name}
-          fill
+          layout="fill"
+          width={100}
+          height={100}
           className="object-contain"
         />
       </div>

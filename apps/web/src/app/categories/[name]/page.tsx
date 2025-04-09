@@ -3,15 +3,17 @@
 import { useEffect, useState } from "react";
 import { Product } from "@/types/product";
 import ProductCard from "@/components/cards/ProductCard";
-import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { useParams } from "next/navigation";
 
-interface CategoryDetailProps {
-  params: { name: string };
+interface categoryDetails {
+  params: Promise<{ name: string }>;
+  // params: { name: string };
 }
 
-export default function CategoryDetail({ params }: CategoryDetailProps) {
+const CategoryDetail: React.FC<categoryDetails> = () => {
   const { name } = useParams();
+  console.log(name);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,3 +130,5 @@ export default function CategoryDetail({ params }: CategoryDetailProps) {
     </div>
   );
 }
+
+export default CategoryDetail;

@@ -2,7 +2,7 @@
 
 import { Category } from "@/types/category";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -41,6 +41,7 @@ const CategoryCard = ({ category }: { category: Category }) => {
                   src={category.imageUrl || "/placeholder.jpg"}
                   alt={category.name}
                   layout="fill"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   objectFit="cover"
                   className="transition-transform duration-500"
                 />

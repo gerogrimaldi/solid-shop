@@ -20,7 +20,6 @@ export default function CartPage() {
         if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setCartItems(data);
-        console.log(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
       } finally {

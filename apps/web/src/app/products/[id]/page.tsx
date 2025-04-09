@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
+import Image from "next/legacy/image";
 import { ShoppingCart, Heart, Check } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 
 interface ProductPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
+  // params: { id: string };
 }
 
 const ProductPage: React.FC<ProductPageProps> = () => {
@@ -52,7 +53,6 @@ const ProductPage: React.FC<ProductPageProps> = () => {
         if (!res.ok) throw new Error("Error fetching wishlist");
         
         const wishlistItems = await res.json();
-        console.log(wishlistItems)
         const isLiked = wishlistItems.some((item: any) => item.id === product.id);
         setLiked(isLiked);
       } catch (error) {
@@ -136,6 +136,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
                 src={product.imageUrl || '/placeholder-image.jpg'}
                 alt={product.name}
                 layout="fill"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 objectFit="cover"
                 className="transition-transform duration-700"
               />
