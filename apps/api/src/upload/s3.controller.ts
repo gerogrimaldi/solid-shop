@@ -2,12 +2,18 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { S3Service } from './s3.service';
+import { JwtAuthGuard } from 'src/authorization/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/authorization/custom-decorators/roles.guard';
+import { AcceptedRoles } from 'src/authorization/custom-decorators/roles.decorator';
 
+@UseGuards(JwtAuthGuard,RolesGuard)
+@AcceptedRoles('ADMIN')
 @ApiTags('File Upload')
 @Controller('upload')
 export class S3Controller {

@@ -6,9 +6,7 @@ import NavBar from "@/components/NavBar";
 import ProductCard from "@/components/ProductCard";
 import { useEffect, useState } from "react";
 import { Product } from "@/types/product";
-
-
-const categories = ["Electrónica", "Ropa", "Hogar", "Deportes", "Supermercado", "Vehículos"];
+import { mockCategories } from "@/types/category";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,7 +42,7 @@ export default function Home() {
 
       <section className="flex flex-col md:flex-row gap-4 p-6 items-center justify-center">
         <aside className="w-full md:w-1/4 space-y-3">
-          {categories.map((category) => (
+          {mockCategories.map((category) => (
             <Link
               key={category}
               href={`/categories/${slugify(category)}`}
