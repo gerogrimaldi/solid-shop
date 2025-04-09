@@ -200,7 +200,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
               <div className="flex justify-between items-center">
                 <p className="text-3xl font-bold text-amber-600">${product.price.toFixed(2)}</p>
                 <div className="bg-green-50 px-3 py-1 rounded-full">
-                  <p className="text-sm text-green-600 font-medium">
+                  <p className={`text-sm text-green-600 font-medium ${product.stock === 0 ? 'text-red-500' : 'text-green-600'}`}>
                     {product.stock > 0 ? `${product.stock} en stock` : 'Agotado'}
                   </p>
                 </div>
@@ -217,14 +217,20 @@ const ProductPage: React.FC<ProductPageProps> = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleAddToCart}
-                disabled={addedToCart}
+                disabled={addedToCart || product.stock === 0}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-medium shadow-sm transition-all duration-300 ${
-                  addedToCart
+                  product.stock === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : addedToCart
                     ? 'bg-green-600 text-white'
                     : 'bg-amber-600 hover:bg-amber-700 text-white'
                 }`}
               >
-                {addedToCart ? (
+                {product.stock === 0 ? (
+                  <>
+                    <span>Producto agotado</span>
+                  </>
+                ) : addedToCart ? (
                   <>
                     <Check size={20} /> Añadido
                   </>
@@ -234,6 +240,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
                   </>
                 )}
               </motion.button>
+
 
               <motion.button
                 whileHover={{ scale: 1.02 }}

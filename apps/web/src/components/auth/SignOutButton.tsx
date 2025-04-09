@@ -31,7 +31,7 @@ export function SignOutButton() {
         className="flex items-center gap-1 px-4 py-2 bg-neutral-900 text-white rounded-full hover:bg-neutral-800 transition-colors"
       >
         <LogOut className="w-4 h-4" />
-        Cerrar sesión
+        <span className="hidden md:inline">Cerrar sesión</span>
       </button>
     </form>
   );

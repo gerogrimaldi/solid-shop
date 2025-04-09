@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Category } from "../../types/category";
-import CategoryCard from "@/components/CategoryCard";
+import CategoryCard from "@/components/cards/CategoryCard";
 import NavBar from "@/components/NavBar";
 import { motion } from "framer-motion";
 

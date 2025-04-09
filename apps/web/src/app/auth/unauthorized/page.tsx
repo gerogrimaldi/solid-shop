@@ -1,23 +1,31 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Lock } from "lucide-react";
 
-export default function Unauthorized() {
+export default function UnauthorizedPage() {
+  const router = useRouter();
+
+  const goToLogin = () => {
+    router.push("/auth/login");
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-red-100 border border-red-300 rounded-xl shadow-md max-w-md w-full p-8">
-        <h1 className="text-2xl font-bold text-red-700 mb-4 text-center">
-          Acceso No Autorizado
-        </h1>
-        <p className="text-gray-800 dark:text-gray-200 mb-6 text-center">
-          Lo sentimos, no tienes permiso para acceder a esta página.
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="bg-white max-w-md w-full rounded-xl shadow-md p-8 text-center">
+        <div className="flex justify-center mb-4">
+          <Lock size={48} className="text-amber-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Acceso no autorizado</h1>
+        <p className="text-gray-600 mb-6">
+          No tienes permisos para ver esta página. Por favor inicia sesión con una cuenta válida.
         </p>
-        <Link
-          href="/auth/login"
-          className="block bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-center transition-colors"
+        <button
+          onClick={goToLogin}
+          className="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
         >
-          Ir al Login
-        </Link>
+          Ir al inicio de sesión
+        </button>
       </div>
     </div>
   );

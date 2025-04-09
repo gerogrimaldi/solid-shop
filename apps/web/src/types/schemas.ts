@@ -1,37 +1,34 @@
 import { z } from "zod";
 
-// Enum for user roles (shared across frontend/backend)
 export enum Role {
   ADMIN = "ADMIN",
   USER = "USER",
 }
 
-// Signup Form Schema
+// Esquema para formulario de registro
 export const SignupFormSchema = z.object({
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be less than 20 characters")
+    .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
+    .max(20, "El nombre de usuario no puede exceder 20 caracteres")
     .regex(
       /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
+      "El nombre de usuario solo puede contener letras, números y guiones bajos"
     ),
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Ingresa un correo electrónico válido"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(8, "La contraseña debe tener al menos 8 caracteres")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-])[A-Za-z\d@$!%*?&-]+$/,
-      "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character (@$!%*?&-)"
+      "La contraseña debe contener al menos: 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (@$!%*?&-)"
     )
 });
 
-// Login Form Schema
 export const LoginFormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email." }).trim(),
-  password: z.string().min(1, { message: "Password field must not be empty." }),
+  email: z.string().email({ message: "Por favor ingresa un correo válido" }).trim(),
+  password: z.string().min(1, { message: "La contraseña es requerida" }),
 });
 
-// TypeScript type inference
 export type SignupFormData = z.infer<typeof SignupFormSchema>;
 export type LoginFormData = z.infer<typeof LoginFormSchema>;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Product } from "@/types/product";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/cards/ProductCard";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 

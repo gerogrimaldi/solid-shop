@@ -37,7 +37,7 @@ const NavBar = () => {
     </Link>
 
     <Link
-      href="/nosotros"
+      href="/"
       className="text-sm hover:text-neutral-600 transition font-medium"
     >
       Nosotros
@@ -53,7 +53,7 @@ const NavBar = () => {
             href="/admin/dashboard"
             className="flex items-center gap-1 text-sm hover:text-neutral-600 transition font-medium"
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <LayoutDashboard className="w-5 h-5" />
             Admin
           </Link>
         )}
@@ -62,14 +62,14 @@ const NavBar = () => {
           href="/cart"
           className="flex items-center gap-1 text-sm hover:text-neutral-600 transition font-medium"
         >
-          <ShoppingCart className="w-4 h-4" />
+          <ShoppingCart className="w-5 h-5" />
         </Link>
 
         <Link
           href="/wishlist"
           className="flex items-center gap-1 text-sm hover:text-neutral-600 transition font-medium"
         >
-          <Heart className="w-4 h-4" />
+          <Heart className="w-5 h-5" />
         </Link>
 
         <span className="text-sm text-neutral-500 font-medium px-2">
