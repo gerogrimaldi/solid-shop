@@ -24,11 +24,10 @@ export default function LoginForm() {
   const handleFormSubmit = async (data: LoginFormData) => {
     setFormError("");
     // login directo al backend para que este setee las cookies
-    const res = await fetch("/api/authorization/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: data.email, password: data.password }),
-      credentials: "include",
+    const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
     });
 
     if (!res.ok) {
@@ -41,9 +40,9 @@ export default function LoginForm() {
       return;
     } else {
       // ya tengo la cookie con el jwt seteada por lo que solo hago el signIn de next-auth para que se almacene en la session
-       await signIn("credentials", {
-         redirect: false
-       });
+      //  await signIn("credentials", {
+      //    redirect: false
+      //  });
       router.push("/");
     }
 

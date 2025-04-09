@@ -11,29 +11,35 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    // obtengo token de las cookies
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromCookies(request, 'Authentication');
+  // async canActivate(context: ExecutionContext): Promise<boolean> {
+  //   // obtengo token de las cookies
+  //   const request = context.switchToHttp().getRequest();
+  //   const token = this.extractTokenFromCookies(request, 'Authentication');
 
-    if (!token) {
-      // si no hay intento refrescarlo
-      return await this.handleRefresh(context, request);
-    }
+  //   if (!token) {
+  //     // si no hay intento refrescarlo
+  //     return await this.handleRefresh(context, request);
+  //   }
 
-    // verifico token si hay
-    try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'supersecret',
-      });
+  //   // verifico token si hay
+  //   try {
+  //     const payload = await this.jwtService.verifyAsync(token, {
+  //       secret: process.env.JWT_SECRET || 'supersecret',
+  //     });
 
-      request.user = payload;
-      return true;
-    } catch (error) {
-      return await this.handleRefresh(context, request);
-    }
+  //     request.user = payload;
+  //     return true;
+  //   } catch (error) {
+  //     return await this.handleRefresh(context, request);
+  //   }
+  // }
+
+  canActivate(context: ExecutionContext) {
+    // Add your custom authentication logic here
+    // for example, call super.logIn(request) to establish a session.
+    return super.canActivate(context);
   }
-
+  
   private extractTokenFromCookies(request: any, cookieName: string): string | null {
     const cookies = request.headers.cookie?.split('; ');
     const targetCookie = cookies?.find(cookie => cookie.startsWith(`${cookieName}=`));

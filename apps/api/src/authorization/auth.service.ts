@@ -59,7 +59,8 @@ export class AuthService {
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
-    return { message: 'Login exitoso'} ;
+    const result = {...payload, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken};
+    return result;
   }
 
   // REFRESH
