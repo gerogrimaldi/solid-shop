@@ -16,6 +16,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@types/cookie-parser": "^1.4.8",
     "@types/jest": "^29.5.14",
     "prettier": "^3.2.5",
     "turbo": "^2.4.4"
@@ -35,6 +36,7 @@
     "@nestjs/platform-socket.io": "^11.0.12",
     "@nestjs/websockets": "^11.0.12",
     "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1"
   }

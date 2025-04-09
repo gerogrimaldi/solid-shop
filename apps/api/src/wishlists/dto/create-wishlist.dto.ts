@@ -5,7 +5,7 @@ export class CreateWishlistItemDto {
     @IsNotEmpty()
     @IsUUID()
     @ApiProperty()
-    userId: string;
+    wishlistId: string;
 
     @IsNotEmpty()
     @IsUUID()
