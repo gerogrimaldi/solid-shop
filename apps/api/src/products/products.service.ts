@@ -6,7 +6,7 @@ import { StockGateway } from 'src/stock/stock.gateway';
 import { Prisma } from '@prisma/client';
 import { BadRequestException } from '@nestjs/common';
 import { InternalServerErrorException } from '@nestjs/common';
-import { removeUndefinedFields } from 'utils/prisma/utils';
+import { removeUndefinedFields } from 'src/utils/prisma-utils';
 
 @Injectable()
 export class ProductsService {
