@@ -6,6 +6,7 @@ import { StockGateway } from 'src/stock/stock.gateway';
 import { Prisma } from '@prisma/client';
 import { BadRequestException } from '@nestjs/common';
 import { InternalServerErrorException } from '@nestjs/common';
+import { removeUndefinedFields } from 'src/utils/prisma-utils';
 
 @Injectable()
 export class ProductsService {
@@ -50,7 +51,7 @@ export class ProductsService {
   async findLimited(limit: number) {
     try {
       const products = await this.prisma.product.findMany({
-       take: limit,
+        take: limit,
         orderBy: { createdAt: 'desc' },
       });
       return products;
@@ -78,14 +79,20 @@ export class ProductsService {
   }
 
   // CARRITO
-  async findCartProducts(cartItems: {id: string, productId: string, cartId:string, quantity: number }[]) {
-
+  async findCartProducts(
+    cartItems: {
+      id: string;
+      productId: string;
+      cartId: string;
+      quantity: number;
+    }[],
+  ) {
     // obtengo arreglo de ids de producto
-    const productIds = cartItems.map(item => item.productId);
+    const productIds = cartItems.map((item) => item.productId);
     // encuentro los productos
     const products = await this.prisma.product.findMany({
       where: { id: { in: productIds } },
-      select:{
+      select: {
         id: true,
         name: true,
         description: true,
@@ -93,27 +100,33 @@ export class ProductsService {
         price: true,
         stock: true,
         imageUrl: true,
-      }
+      },
     });
-  
+
     if (products.length === 0) {
       throw new NotFoundException('No se encontraron productos en el carrito');
     }
     // devuelvo nuevo arreglo con producto y su cantidad en el carrito
-    return cartItems.map(cartItem => {
-      const product = products.find(p => p.id === cartItem.productId);
-      return product ? { itemId:cartItem.id, ...product, quantity: cartItem.quantity } : null;
-    }).filter(Boolean); // Filtrar productos nulos
+    return cartItems
+      .map((cartItem) => {
+        const product = products.find((p) => p.id === cartItem.productId);
+        return product
+          ? { itemId: cartItem.id, ...product, quantity: cartItem.quantity }
+          : null;
+      })
+      .filter(Boolean); // Filtrar productos nulos
   }
-  
+
   // WISHLIST
-  async findWishlistProducts(wishlistItems: {id: string, productId: string, wishlistId:string}[]) {
+  async findWishlistProducts(
+    wishlistItems: { id: string; productId: string; wishlistId: string }[],
+  ) {
     // obtengo arreglo de ids de producto
-    const productIds = wishlistItems.map(item => item.productId);
+    const productIds = wishlistItems.map((item) => item.productId);
     // encuentro los productos
     const products = await this.prisma.product.findMany({
       where: { id: { in: productIds } },
-      select:{
+      select: {
         id: true,
         name: true,
         description: true,
@@ -121,54 +134,59 @@ export class ProductsService {
         price: true,
         stock: true,
         imageUrl: true,
-      }
+      },
     });
-  
+
     if (products.length === 0) {
       throw new NotFoundException('No se encontraron productos en la wishlist');
     }
     // devuelvo nuevo arreglo con productoS
-    return wishlistItems.map(wishlistItem => {
-      const product = products.find(p => p.id === wishlistItem.productId); //asocio cada producto con su wishlistItem
-      return product ? { itemId:wishlistItem.id, ...product } : null;
-    }).filter(Boolean); // Filtrar productos nulos
+    return wishlistItems
+      .map((wishlistItem) => {
+        const product = products.find((p) => p.id === wishlistItem.productId); //asocio cada producto con su wishlistItem
+        return product ? { itemId: wishlistItem.id, ...product } : null;
+      })
+      .filter(Boolean); // Filtrar productos nulos
   }
-  
-async update(id: string, updateProductDto: UpdateProductDto) {
-  try {
-    const updatedProduct = await this.prisma.product.upsert({
-      where: { id },
-      update: {
-        ...updateProductDto,
-        updatedAt: new Date(),
-      },
-      create: {
-        id,
-        name: updateProductDto.name || '',
-        description: updateProductDto.description || '',
-        price: updateProductDto.price || 0,
-        stock: updateProductDto.stock || 0,
-        categoryId: updateProductDto.categoryId || '',
-        imageUrl: updateProductDto.imageUrl || '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
 
-    // Emitir evento si el stock fue actualizado
-    if (updateProductDto.stock !== undefined) {
-      this.stockGateway.updateStock(id, updatedProduct.name, updateProductDto.stock);
-    }
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    try {
+      const updatedProduct = await this.prisma.product.upsert({
+        where: { id },
+        update: {
+          ...removeUndefinedFields(updateProductDto),
+          updatedAt: new Date(),
+        },
+        create: {
+          id,
+          name: updateProductDto.name,
+          description: updateProductDto.description,
+          price: updateProductDto.price,
+          stock: updateProductDto.stock,
+          imageUrl: updateProductDto.imageUrl || '',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          categoryId: updateProductDto.categoryId,
+        },
+      });
 
-    return updatedProduct;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new InternalServerErrorException(error.message);
+      // Emitir evento si el stock fue actualizado
+      if (updateProductDto.stock !== undefined) {
+        this.stockGateway.updateStock(
+          id,
+          updatedProduct.name,
+          updateProductDto.stock,
+        );
+      }
+
+      return updatedProduct;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new InternalServerErrorException(error.message);
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
-    throw new InternalServerErrorException('An unexpected error occurred');
   }
-}
-
 
   async remove(id: string) {
     try {

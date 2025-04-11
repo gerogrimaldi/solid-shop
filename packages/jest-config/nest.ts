@@ -11,4 +11,8 @@ export const config = {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  moduleNameMapper: {
+    '^prisma/(.*)$': '<rootDir>/../prisma/$1',
+    '^src/(.*)$': '<rootDir>/$1',
+  },
 } as const satisfies Config;
