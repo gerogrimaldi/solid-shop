@@ -10,10 +10,14 @@ declare module "next-auth" {
     roles?: string[];
     cartId?: string;
     wishlistId?: string;
-    accessToken?: string;
-    refreshToken?: string;
+    tokens?: backendTokens;
   }
-
+  interface backendTokens {
+    accessToken: string;
+    refreshToken: string;
+    accessExpire: number,
+    refreshExpire: number,
+  }
   interface Session {
     user?: User;
   }
@@ -25,6 +29,12 @@ declare module "next-auth" {
     roles?: string[];
     cartId?: string;
     wishlistId?: string;
+    backendTokens: {
+      accessToken: string;
+      refreshToken: string;
+      accessExpire: number,
+      refreshExpire: number,
+    }
   }
 
 }
@@ -37,6 +47,14 @@ declare module "next-auth-jwt" {
     roles?: string[];
     cartId?: string;
     wishlistId?: string;
+    backendTokens: backendTokens;
+  }
+
+  interface backendTokens {
+    accessToken: string;
+    refreshToken: string;
+    accessExpire: number,
+    refreshExpire: number,
   }
 
 }

@@ -20,6 +20,10 @@ export class AuthController {
   @UseGuards(RefreshJwtGuard)
   @Post('refresh')
   async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) { //recibo res para las cookies
+    // console.log("Inside refreshToken controller")
+    // console.log(req.user)
+    // const refreshToken = req.cookies['RefreshToken'];
+    // console.log("cookeis reciibdas en controller: ", refreshToken)
     return this.authService.refreshToken(req.user, res);
   }
 

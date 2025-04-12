@@ -11,26 +11,33 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  // async canActivate(context: ExecutionContext): Promise<boolean> {
+  //   async canActivate(context: ExecutionContext) {
   //   // obtengo token de las cookies
   //   const request = context.switchToHttp().getRequest();
   //   const token = this.extractTokenFromCookies(request, 'Authentication');
 
+  //   // si no hay token intento refrescar
   //   if (!token) {
-  //     // si no hay intento refrescarlo
-  //     return await this.handleRefresh(context, request);
+  //     const refreshAttempt = await this.handleRefresh(context, request);
+  //     if (!refreshAttempt) {
+  //       throw new UnauthorizedException('Token no disponible');
+  //     }
+  //     return true;
   //   }
-
-  //   // verifico token si hay
+    
   //   try {
   //     const payload = await this.jwtService.verifyAsync(token, {
   //       secret: process.env.JWT_SECRET || 'supersecret',
   //     });
-
-  //     request.user = payload;
+  
+  //     request.user = payload; // Asignamos el payload al request para que esté disponible en los controladores
   //     return true;
-  //   } catch (error) {
-  //     return await this.handleRefresh(context, request);
+  //   } catch (err) {
+  //     const refreshAttempt = await this.handleRefresh(context, request);
+  //     if (!refreshAttempt) {
+  //       throw new UnauthorizedException('Token inválido y no se pudo refrescar');
+  //     }
+  //     return true;
   //   }
   // }
 
@@ -39,7 +46,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // for example, call super.logIn(request) to establish a session.
     return super.canActivate(context);
   }
-  
+
   private extractTokenFromCookies(request: any, cookieName: string): string | null {
     const cookies = request.headers.cookie?.split('; ');
     const targetCookie = cookies?.find(cookie => cookie.startsWith(`${cookieName}=`));

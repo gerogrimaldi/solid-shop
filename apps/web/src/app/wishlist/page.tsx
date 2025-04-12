@@ -4,18 +4,29 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WishlistItemComponent from "@/components/Items/WishListItem";
 import { WishlistItem } from "../../types/Items";
+import { useSession } from "next-auth/react";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function WishlistPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const user = session?.user;
+
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
+    if (status !== "authenticated") return;
+
     const fetchWishlist = async () => {
       try {
-        const response = await fetch("/api/wishlists/items", { credentials: "include" });
-        if (!response.ok) throw new Error("Error al cargar la lista de favoritos");
+        const response = await fetchWithAuth("/api/wishlists/items", {
+          headers: {
+            Authorization: `Bearer ${user?.tokens?.accessToken}`,
+          },
+        });
+        if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setWishlistItems(data);
       } catch (err) {
@@ -24,8 +35,9 @@ export default function WishlistPage() {
         setLoading(false);
       }
     };
+
     fetchWishlist();
-  }, []);
+  }, [status, user?.accessToken]);
 
   const removeItem = async (itemId: string) => {
     
@@ -46,10 +58,13 @@ export default function WishlistPage() {
       const response = await fetch('/api/carts/items', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.tokens?.accessToken}`
+        },
         body: JSON.stringify({
-            productId: productId, 
-            quantity: 1 
+        productId: productId, 
+        quantity: 1 
         }),
       });
       

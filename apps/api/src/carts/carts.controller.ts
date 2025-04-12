@@ -34,6 +34,7 @@ export class CartsController {
     @Body('id') itemId: string,
     @Body('quantity') quantity: number,
   ) {
+    console.log(itemId, quantity);
     return this.cartsService.updateUserCart(itemId, quantity);
   }
 

@@ -11,10 +11,28 @@ interface TokenPayload extends JWTPayload{
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("Authentication")?.value;
+  const refreshToken = request.cookies.get("RefreshToken")?.value;
 
   // Redirige si no hay token y quiere acceder a /admin
   if (!token && request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
+  }
+
+  // Redirige si no hay token y quiere acceder a /cart
+  if (!token && request.nextUrl.pathname.startsWith("/cart")) {
+    if(!refreshToken) {
+      return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
+    }else{
+
+    }
+  }
+  // Redirige si no hay token y quiere acceder a /wishlist
+  if (!token && request.nextUrl.pathname.startsWith("/wishlist")) {
+    if(!refreshToken) {
+      return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
+    }else{
+      
+    }
   }
 
   try {
@@ -44,5 +62,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/cart/:path*", "/wishlist/:path*"],
 };

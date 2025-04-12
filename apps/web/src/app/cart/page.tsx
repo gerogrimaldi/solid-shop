@@ -5,18 +5,26 @@ import { useRouter } from "next/navigation";
 import CartItemComponent from "@/components/Items/CartItem";
 import { CartItem } from "../../types/Items";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { useSession } from "next-auth/react";
 
 export default function CartPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const user = session?.user;
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    // GET
+    if (status !== "authenticated") return;
+
     const fetchCart = async () => {
       try {
-        const response = await fetchWithAuth("/api/carts/items");
+        const response = await fetchWithAuth("/api/carts/items", {
+          headers: {
+            Authorization: `Bearer ${user?.tokens?.accessToken}`
+          },
+        });
         if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setCartItems(data);
@@ -26,21 +34,29 @@ export default function CartPage() {
         setLoading(false);
       }
     };
-    fetchCart();
-  }, []);
 
+    fetchCart();
+  }, [status, user?.accessToken]);
   // PATCH
   const updateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
+
+    console.log("Updating item", itemId, "to quantity", newQuantity);
     try {
       const response = await fetch(`/api/carts/items`, {
         method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.tokens?.accessToken}`
+        },
         body: JSON.stringify({ id: itemId, quantity: newQuantity }),
       });
       if (!response.ok) throw new Error("Error al actualizar");
-      setCartItems(prev => prev.map(item => item.itemId === itemId ? { ...item, quantity: newQuantity } : item));
+      setCartItems(prev =>
+        prev.map(item =>
+          item.itemId === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al actualizar");
     }
@@ -51,7 +67,10 @@ export default function CartPage() {
     try {
       const response = await fetch(`/api/carts/items/${itemId}`, {
         method: "DELETE",
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.tokens?.accessToken}`
+        },
       });
       if (!response.ok) throw new Error("Error al eliminar");
       setCartItems(prev => prev.filter(item => item.itemId !== itemId));
@@ -60,7 +79,7 @@ export default function CartPage() {
     }
   };
 
-  const calculateTotal = () => 
+  const calculateTotal = () =>
     cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
   if (loading) return <div className="text-center p-8">Cargando...</div>;
@@ -85,11 +104,11 @@ export default function CartPage() {
           <div className="grid grid-cols-1 md:grid-cols-[1fr_380px] gap-4">
             <div className="bg-white rounded-lg shadow-sm">
               {cartItems.map(item => (
-                <CartItemComponent 
-                  key={item.itemId} 
-                  item={item} 
-                  updateQuantity={updateQuantity} 
-                  removeItem={removeItem} 
+                <CartItemComponent
+                  key={item.itemId}
+                  item={item}
+                  updateQuantity={updateQuantity}
+                  removeItem={removeItem}
                 />
               ))}
             </div>

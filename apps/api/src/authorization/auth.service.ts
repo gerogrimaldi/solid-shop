@@ -35,12 +35,13 @@ export class AuthService {
       secure: true, //solo HTTPS
       httpOnly: true, //previene XSS
       expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutos
+      sameSite: "none"
     })
     res.cookie('RefreshToken', refreshToken, {
       secure: true,      
       httpOnly: true,     
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), //3 dias
-      sameSite: 'strict', // previene CSRF
+      sameSite: "none"
     });
   }
 
@@ -59,13 +60,14 @@ export class AuthService {
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
-    const result = {...payload, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken};
-    return result;
+    return  { message: 'Login exitoso'} ;
+
   }
 
   // REFRESH
   async refreshToken(user: any, res: Response) {
     // el payload genera los claims del token
+    
     const payload = { 
       sub: user.sub, //campo distinto al login ya que lee sub del jwt, no user.id del User type
       username: user.username, 
@@ -74,10 +76,26 @@ export class AuthService {
       cartId: user.cartId,
       wishlistId: user.wishlistId,
     };
+
     const tokens = this.getTokens(payload);
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
-    return { message: 'Login exitoso'} ;
+
+    // Decodificamos los tokens para obtener el `exp`
+    const decodedAccess = this.jwtService.decode(tokens.accessToken) as any;
+    const decodedRefresh = this.jwtService.decode(tokens.refreshToken) as any;
+
+    const result = {
+      ...payload,
+      backendTokens: { 
+        accessToken: tokens.accessToken, 
+        refreshToken: tokens.refreshToken,
+        accessExpire: decodedAccess?.exp ? decodedAccess.exp * 1000 : null, // en milisegundos
+        refreshExpire: decodedRefresh?.exp ? decodedRefresh.exp * 1000 : null,
+      }
+    };
+    // console.log("#########################Token refrescado exitosamente", result);
+    return result;
   }
 
   // LOGOUT
@@ -108,22 +126,38 @@ export class AuthService {
   async verifyToken(req, res: Response) {
     try {
       const token = req.cookies['Authentication'];
+      const refreshToken = req.cookies['RefreshToken'];
       
       if (!token) {
         return res.status(401).json({ error: 'No autenticado' });
       }
-
+  
+      // Verificamos el token de acceso
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET || "supersecret"
       });
-
-      return res.json(payload);
+  
+      // Decodificamos los tokens para obtener el `exp`
+      const decodedAccess = this.jwtService.decode(token) as any;
+      const decodedRefresh = this.jwtService.decode(refreshToken) as any;
+  
+      const result = {
+        ...payload, 
+        backendTokens: { 
+          accessToken: token, 
+          refreshToken: refreshToken,
+          accessExpire: decodedAccess?.exp ? decodedAccess.exp * 1000 : null, // en milisegundos
+          refreshExpire: decodedRefresh?.exp ? decodedRefresh.exp * 1000 : null,
+        }
+      };
+  
+      return res.json(result);
       
     } catch (error) {
       return res.status(401).json({ error: 'Token inválido' });
     }
   }
-
+  
   //  ########################################################################################################
   // REGISTER
   async register(registerAuthDto: RegisterAuthDto) {

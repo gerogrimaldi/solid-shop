@@ -1,10 +1,46 @@
 // lib/auth.ts
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { JWT, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+async function refreshToken(token: JWT): Promise<JWT> {
+  try {
+    if (!token.backendTokens?.refreshToken) {
+      throw new Error("No refresh token available");
+    }
 
-// NEXT AUTH SOLO SE USA PARA ALMACENAR SESION
-//  la logica de validaciones se hace en el backend con cookies
+    console.log("este token: ", token)
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/refresh-token`, {
+      method: "POST",
+      credentials: "include", 
+      headers: {
+        "Content-Type": "application/json",
+        'Cookie': `RefreshToken=${token.backendTokens.refreshToken}`,
+      },
+    });    
+    
+    if (!res.ok) {
+      throw new Error("Failed to refresh token");
+    }
+    
+    const response = await res.json();
+    const result = {
+      ...token,
+      backendTokens: response.backendTokens
+    };
+    console.log("\n##################Token refreshed successfully: ", result);
+    return result;
+    
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return {
+      ...token,
+      backendTokens: undefined
+    };
+  }
+}
+
+// el login ya esta ehcho en el backend por lo que solo tengo que verificar la cookie
+// y si existe, ya estoy logueado
 export const authOptions: NextAuthOptions = ({
     providers:[
         CredentialsProvider({
@@ -16,59 +52,65 @@ export const authOptions: NextAuthOptions = ({
             // en el parametro credentials viajan las credenciales ingresaadas desde el front
             // authorize se ejecuta en el back, por lo tanto los proxys de next.config.ts deben estar configurados para que las peticiones se redirijan al backend
            
-            async authorize(credentials) {
-
-                if (!credentials?.email || !credentials?.password) return null;
-
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/authorization/login`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    email: credentials.email,
-                    password: credentials.password,
-                  }),
-                });
-            
-                if (!res.ok) return null;
-            
-                const user = await res.json();
-                return user; // almaceno el payload del jwt de la cookie
-              },
+            authorize: async (credentials, req) => {
+              // Ya estamos logueados en este punto por lo que oslo verificamos que la cookie sea seteada
+              const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/authorization/verify`, {
+                method: "GET",
+                credentials: "include", 
+                headers: {
+                  Cookie: req?.headers?.cookie || "", // para que next reenvíe cookies del navegador
+                },
+              });
+          
+              if (!res.ok) return null;
+          
+              const user = await res.json();
+              return user; // almaceno el payload del jwt de la cookie
+            },
         })
     ],
     callbacks: {
-        async jwt({ token, user }) {
-          if (user) {
-            token.username = user.username;
-            token.roles = user.roles;
-            token.email = user.email;
-            token.sub = user.sub;
-            token.cartId = user.cartId;
-            token.wishlistId = user.wishlistId;
-            token.accessToken = user.accessToken;
-            token.refreshToken = user.refreshToken;
-          }
-          console.log("Jwt token i nnext auth", token)
-          return token; // token sin actualizar
-          },          
+      async jwt({ token, user }) {
+        // Initial sign in - use the tokens exactly as received
+        if (user) {
+          console.log("Initial login - using received tokens");
+          return {
+            ...token,
+            ...user,
+          };
+        }
+        
+        // If access token hasn't expired, return the current token
+        if (token.backendTokens?.accessExpire && Date.now() < token.backendTokens.accessExpire) {
+          return token; // aún válido
+        }
+        // Access token has expired, try to refresh
+        console.log("Token expired, attempting refresh");
+        return await refreshToken(token);
+      },
       
         async session({ session, token }) {
            // Copiamos del token a la sesión
            try {
             if (token) {
-                session.user = {
-                    id: token.sub || '',
-                    username: token.username as string,
-                    email: token.email as string,
+
+              // console.log("Token en session callback:", token);
+              session.user = {
+                id: token.sub || '',
+                username: token.username as string,
+                email: token.email as string,
                     roles: token.roles as string[],
                     cartId: token.cartId as string,
                     wishlistId: token.wishlistId as string,
-                    accessToken: token.accessToken as string,
-                    refreshToken: token.refreshToken as string,
+                    tokens: {
+                      accessToken: token.backendTokens?.accessToken as string,
+                      refreshToken: token.backendTokens?.refreshToken as string,
+                      accessExpire: token.backendTokens?.accessExpire as number,
+                      refreshExpire: token.backendTokens?.refreshExpire as number,
+                    }
                   };
                 }
 
-                console.log("Session i nnext auth", session)
             return session;
 
             }catch (err) {

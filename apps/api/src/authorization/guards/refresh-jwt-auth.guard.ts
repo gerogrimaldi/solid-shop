@@ -12,8 +12,11 @@ export class RefreshJwtGuard extends AuthGuard('refresh-jwt') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromCookies(request);
+    // console.log("Inside refresh")
+    // console.log("[Guard] Cookies recibidas:", request.headers.cookie);
 
     if (!token) {
+      console.log("Inside refresh error")
       throw new UnauthorizedException('Refresh Token no proporcionado');
     }
 
@@ -37,4 +40,10 @@ export class RefreshJwtGuard extends AuthGuard('refresh-jwt') {
     const authCookie = cookies?.find(cookie => cookie.startsWith('RefreshToken='));
     return authCookie?.split('=')[1] || null;
   }
+
+  // private extractTokenFromHeader(request: any): string | null {
+  //   const headers = request.headers.authorization?.split(' ');
+  //   const authCookie = cookies?.find(cookie => cookie.startsWith('RefreshToken='));
+  //   return authCookie?.split('=')[1] || null;
+  // }
 }
