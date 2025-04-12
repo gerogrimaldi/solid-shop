@@ -1,5 +1,9 @@
+import { Router, useRouter } from "next/router";
+
 // utils/fetchWithAuth.ts
 export async function fetchWithAuth(input: RequestInfo, init?: RequestInit): Promise<Response> {
+  const router = useRouter();
+
   const response = await fetch(input, {
     ...init,
     credentials: 'include', // importante para que se envíen las cookies
@@ -10,6 +14,7 @@ export async function fetchWithAuth(input: RequestInfo, init?: RequestInit): Pro
 
     const refresh = await refreshTokenFunction();
     if (!refresh.ok) {
+      router.push('/login'); // Redirigir a la página de inicio de sesión si el refresh falla
       throw new Error('No se pudo refrescar el token');
     }
 

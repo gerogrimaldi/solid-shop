@@ -18,6 +18,16 @@
         "!.next/cache/**"
       ]
     },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "env": ["SOME_OTHER_ENV_VAR"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "api#build": {
+      "dependsOn": ["^build"],
+      "env": ["SOME_OTHER_ENV_VAR"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
     "lint": {},
     "test": {},
     "test:e2e": {}

@@ -1,6 +1,9 @@
 // lib/auth.ts
-import NextAuth, { JWT, NextAuthOptions } from "next-auth";
+import NextAuth, {  NextAuthOptions } from "next-auth";
+import {JWT} from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
+
+
 
 async function refreshToken(token: JWT): Promise<JWT> {
   try {
@@ -8,7 +11,6 @@ async function refreshToken(token: JWT): Promise<JWT> {
       throw new Error("No refresh token available");
     }
 
-    console.log("este token: ", token)
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/refresh-token`, {
       method: "POST",
       credentials: "include", 
@@ -27,14 +29,19 @@ async function refreshToken(token: JWT): Promise<JWT> {
       ...token,
       backendTokens: response.backendTokens
     };
-    console.log("\n##################Token refreshed successfully: ", result);
+    // console.log("\n##################Token refreshed successfully: ", result);
     return result;
     
   } catch (error) {
     console.error("Error refreshing token:", error);
     return {
       ...token,
-      backendTokens: undefined
+      backendTokens: {
+        accessToken: "",
+        refreshToken: "",
+        accessExpire: 0,
+        refreshExpire: 0,
+      }
     };
   }
 }

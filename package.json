@@ -11,7 +11,8 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "build:api:image": "turbo prune api --docker && docker build -f apps/api/Dockerfile -t solid-api ."
   },
   "devDependencies": {
     "@eslint/plugin-kit": "^0.2.8",

@@ -36,7 +36,7 @@ export default function CartPage() {
     };
 
     fetchCart();
-  }, [status, user?.accessToken]);
+  }, [status, user?.tokens?.accessToken]);
   // PATCH
   const updateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;

@@ -39,7 +39,7 @@ declare module "next-auth" {
 
 }
 
-declare module "next-auth-jwt" {
+declare module "next-auth/jwt" {
   interface JWT {
     sub?: string;
     username?: string;
@@ -47,14 +47,11 @@ declare module "next-auth-jwt" {
     roles?: string[];
     cartId?: string;
     wishlistId?: string;
-    backendTokens: backendTokens;
+    backendTokens?: {
+      accessToken: string;
+      refreshToken: string;
+      accessExpire: number;
+      refreshExpire: number;
+    };
   }
-
-  interface backendTokens {
-    accessToken: string;
-    refreshToken: string;
-    accessExpire: number,
-    refreshExpire: number,
-  }
-
 }

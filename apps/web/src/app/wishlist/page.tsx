@@ -37,7 +37,7 @@ export default function WishlistPage() {
     };
 
     fetchWishlist();
-  }, [status, user?.accessToken]);
+  }, [status, user?.tokens?.accessToken]);
 
   const removeItem = async (itemId: string) => {
     
