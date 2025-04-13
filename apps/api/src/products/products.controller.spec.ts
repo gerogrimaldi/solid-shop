@@ -9,6 +9,7 @@ import { HttpStatus } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { InternalServerErrorException } from '@nestjs/common';
+import { removeUndefinedFields } from 'src/utils/prisma-utils';
 
 describe('ProductsController', () => {
   let controller: ProductsController;

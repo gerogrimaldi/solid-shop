@@ -14,6 +14,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dto/user-response.dto';
 import { jest } from '@jest/globals';
+import { User } from '@prisma/client';
+
 // import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 // import { ExecutionContext } from '@nestjs/common';
 // import { RolesGuard } from 'src/auth/custom-decorators/roles.guard';
@@ -34,27 +36,31 @@ describe('UsersController', () => {
         findFirst: jest.fn(),
       },
       cart: {
-        create: jest.fn().mockResolvedValue({ id: 'mockCartId' }),
+        create: jest.fn(),
       },
       wishlist: {
-        create: jest.fn().mockResolvedValue({ id: 'mockWishlistId' }),
+        create: jest.fn(),
       },
       $connect: jest.fn(),
       $disconnect: jest.fn(),
     };
 
     const mockUsersService = {
-      findAll: jest.fn(),
+      findAll: jest.fn<() => Promise<User[]>>(),
       getUserById: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
       createUser: jest.fn(async (dto) => {
-        const cart = await mockPrismaService.cart.create({ data: {} });
-        const wishlist = await mockPrismaService.wishlist.create({ data: {} });
+        const cart = (await mockPrismaService.cart.create({ data: {} })) as {
+          id: string;
+        };
+        const wishlist = (await mockPrismaService.wishlist.create({
+          data: {},
+        })) as { id: string };
 
         return mockPrismaService.user.create({
           data: {
-            ...dto,
+            ...(dto as object),
             cart: { connect: { id: cart.id } },
             wishlist: { connect: { id: wishlist.id } },
           },
@@ -202,20 +208,26 @@ describe('UsersController', () => {
 
   describe('findAllUsers', () => {
     it('should return an array of users without password', async () => {
-      const mockUsers = [
+      const mockUsersResponse: Partial<UserResponseDto>[] = [
         {
+          id: '1',
           username: 'user1',
           email: 'user1@email.com',
+          cartId: 'cartId1',
+          wishListId: 'wishlistId1',
           role: 'USER',
         },
         {
+          id: '2',
           username: 'user2',
           email: 'user2@email.com',
+          cartId: 'cartId2',
+          wishListId: 'wishlistId2',
           role: 'ADMIN',
         },
       ];
 
-      (service.findAll as jest.Mock).mockResolvedValue(mockUsers);
+      (service.findAll as jest.Mock).mockReturnValueOnce(mockUsersResponse);
 
       const result = await controller.findAllUsers();
 
@@ -223,11 +235,13 @@ describe('UsersController', () => {
       expect(result[0]).toHaveProperty('username');
       expect(result[0]).toHaveProperty('email');
       expect(result[0]).toHaveProperty('role');
-      expect(result[0]).not.toHaveProperty('password'); // bien directo
+      expect(result[0]).not.toHaveProperty('password');
     });
 
     it('should throw NotFoundException if users array not found', async () => {
-      (service.findAll as jest.Mock).mockRejectedValue(new NotFoundException());
+      jest
+        .spyOn(service, 'findAll')
+        .mockRejectedValueOnce(new NotFoundException());
 
       await expect(controller.findAllUsers()).rejects.toThrow(
         NotFoundException,
@@ -235,12 +249,14 @@ describe('UsersController', () => {
     });
 
     it('should throw InternalServerError if something goes wrong', async () => {
-      (service.findAll as jest.Mock).mockRejectedValue(
-        new HttpException(
-          'Failed to fetch users',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        ),
-      );
+      jest
+        .spyOn(service, 'findAll')
+        .mockRejectedValueOnce(
+          new HttpException(
+            'Failed to fetch users',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
 
       await expect(controller.findAllUsers()).rejects.toThrow(HttpException);
     });
@@ -256,7 +272,7 @@ describe('UsersController', () => {
     };
 
     it('should return a user by id without password', async () => {
-      (service.getUserById as jest.Mock).mockResolvedValue({
+      (service.getUserById as jest.Mock).mockReturnValueOnce({
         username: userMock.username,
         email: userMock.email,
         role: userMock.role,
@@ -274,9 +290,11 @@ describe('UsersController', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      (service.getUserById as jest.Mock).mockRejectedValue(
-        new HttpException('users array not found', HttpStatus.NOT_FOUND),
-      );
+      jest
+        .spyOn(service, 'getUserById')
+        .mockRejectedValueOnce(
+          new HttpException('users array not found', HttpStatus.NOT_FOUND),
+        );
 
       await expect(controller.findUserById('invalid-id')).rejects.toThrow(
         HttpException,
@@ -284,12 +302,14 @@ describe('UsersController', () => {
     });
 
     it('should throw InternalServerError if something goes wrong', async () => {
-      (service.getUserById as jest.Mock).mockRejectedValue(
-        new HttpException(
-          'Failed to fetch users',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        ),
-      );
+      jest
+        .spyOn(service, 'getUserById')
+        .mockRejectedValueOnce(
+          new HttpException(
+            'Failed to fetch users',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
 
       await expect(controller.findUserById('any-id')).rejects.toThrow(
         HttpException,
@@ -306,7 +326,7 @@ describe('UsersController', () => {
     };
 
     it('should update a user successfully', async () => {
-      service.update = jest.fn().mockResolvedValue({
+      (service.update as jest.Mock).mockReturnValueOnce({
         message: `User with id: ${id} updated successfully`,
       });
 
@@ -319,9 +339,9 @@ describe('UsersController', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      service.update = jest
-        .fn()
-        .mockRejectedValue(
+      jest
+        .spyOn(service, 'update')
+        .mockRejectedValueOnce(
           new NotFoundException(`User with id ${id} not found`),
         );
 
@@ -331,9 +351,9 @@ describe('UsersController', () => {
     });
 
     it('should throw BadRequestException for other errors', async () => {
-      service.update = jest
-        .fn()
-        .mockRejectedValue(new BadRequestException('Something went wrong'));
+      jest
+        .spyOn(service, 'update')
+        .mockRejectedValueOnce(new BadRequestException('Something went wrong'));
 
       await expect(controller.updateUser(id, updateUserDto)).rejects.toThrow(
         BadRequestException,
@@ -345,7 +365,7 @@ describe('UsersController', () => {
     const id = 'mock-id';
 
     it('should remove a user successfully', async () => {
-      service.remove = jest.fn().mockResolvedValue({
+      (service.remove as jest.Mock).mockReturnValueOnce({
         message: `User with id: ${id} deleted successfully`,
       });
 
@@ -358,9 +378,9 @@ describe('UsersController', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      service.remove = jest
-        .fn()
-        .mockRejectedValue(
+      jest
+        .spyOn(service, 'remove')
+        .mockRejectedValueOnce(
           new NotFoundException(`User with id ${id} not found`),
         );
 
@@ -370,9 +390,9 @@ describe('UsersController', () => {
     });
 
     it('should throw BadRequestException for other errors', async () => {
-      service.remove = jest
-        .fn()
-        .mockRejectedValue(new BadRequestException('Something went wrong'));
+      jest
+        .spyOn(service, 'remove')
+        .mockRejectedValueOnce(new BadRequestException('Something went wrong'));
 
       await expect(controller.removeUser(id)).rejects.toThrow(
         BadRequestException,
