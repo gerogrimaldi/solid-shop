@@ -11,11 +11,15 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "build:api:image": "docker-compose build --no-cache api && docker-compose up api",
+    "build:web:image": "docker-compose build --no-cache web && docker-compose up web"
   },
   "devDependencies": {
+    "@eslint/plugin-kit": "^0.2.8",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@types/cookie-parser": "^1.4.8",
     "prettier": "^3.2.5",
     "turbo": "^2.4.4"
   },
@@ -26,5 +30,17 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs/common": "^11.0.12",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-socket.io": "^11.0.12",
+    "@nestjs/websockets": "^11.0.12",
+    "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
+    "lucide-react": "^0.487.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  }
 }
