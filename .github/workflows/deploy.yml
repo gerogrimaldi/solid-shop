@@ -37,6 +37,12 @@ jobs:
       #   working-directory: tpFinalCrombie/apps/web
       #   run: npm install
 
+      - name: Push Prisma schema to DB
+        working-directory: apps/api
+        run: npx prisma db push
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Run tests in apps/api
         working-directory: apps/api
         run: npm run jest
