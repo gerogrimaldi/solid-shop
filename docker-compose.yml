@@ -31,5 +31,5 @@ services:
       - AUTH_SECRET=${AUTH_SECRET}
     env_file:
       - .env  # Asegúrate de que tu .env esté en la raíz y que contenga la variable DATABASE_URL
-    depends_on:
-      - api
+    # depends_on:
+    #   - api

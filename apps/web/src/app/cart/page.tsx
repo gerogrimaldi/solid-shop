@@ -20,11 +20,14 @@ export default function CartPage() {
 
     const fetchCart = async () => {
       try {
-        const response = await fetchWithAuth("/api/carts/items", {
+        const response = await fetchWithAuth("/api/carts/items", 
+          {
           headers: {
             Authorization: `Bearer ${user?.tokens?.accessToken}`
           },
-        });
+          },
+          router
+      );
         if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setCartItems(data);

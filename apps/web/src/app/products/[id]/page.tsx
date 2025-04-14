@@ -16,6 +16,7 @@ interface ProductPageProps {
 const ProductPage: React.FC<ProductPageProps> = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [itemId, setItemId] = useState("");
   const [product, setProduct] = useState<Product>();
   const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
@@ -50,12 +51,21 @@ const ProductPage: React.FC<ProductPageProps> = () => {
       }
       
       try {
-        const res = await fetch('/api/wishlists/items');
+        const res = await fetch('/api/wishlists/items', {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.tokens?.accessToken}`
+          },
+        });
         if (!res.ok) throw new Error("Error fetching wishlist");
         
         const wishlistItems = await res.json();
-        const isLiked = wishlistItems.some((item: any) => item.id === product.id);
-        setLiked(isLiked);
+        const existingItem = wishlistItems.find((item: any) => item.id === product.id);
+        if (existingItem) {
+          const isLiked = true;
+          setLiked(isLiked);
+          setItemId(existingItem.itemId)
+        }
       } catch (error) {
         console.error("Error checking wishlist status:", error);
       } finally {
@@ -71,7 +81,10 @@ const ProductPage: React.FC<ProductPageProps> = () => {
     try {
       const res = await fetch(`/api/carts/items`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user?.tokens?.accessToken}`
+        },
         body: JSON.stringify({ productId: product.id, quantity: 1 }),
       });
       if (!res.ok) throw new Error("Error al agregar al carrito");
@@ -85,19 +98,44 @@ const ProductPage: React.FC<ProductPageProps> = () => {
 
   const handleAddToWishlist = async () => {
     if (!user || !product) return;
+    
     try {
-      const res = await fetch(`/api/wishlists/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id }),
-      });
-      if (!res.ok) throw new Error("Error al añadir a la lista de deseos");
+      let res;
+
+      if (liked) {
+        // Si el producto ya está en la wishlist, eliminarlo
+        res = await fetch(`/api/wishlists/items/${itemId}`, {
+          method: 'DELETE',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.tokens?.accessToken}`
+          },
+        });
+      } else {
+        // Si el producto no está en la wishlist, agregarlo
+        res = await fetch('/api/wishlists/items', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.tokens?.accessToken}`
+          },
+          body: JSON.stringify({ productId: product.id }),
+        });
+      }
+  
+      if (!res.ok) throw new Error(liked ? "Error al eliminar de la lista de deseos" : "Error al añadir a la lista de deseos");
+      
+      // Cambiar el estado de "liked"
       setLiked(!liked);
+      const item = await res.json();
+      setItemId(item.id);
+      console.log(itemId)
     } catch (error) {
       console.error(error);
-      alert('Error al añadir a la lista de deseos');
+      alert(liked ? 'Error al eliminar de la lista de deseos' : 'Error al añadir a la lista de deseos');
     }
   };
+  
 
   if (loading) {
     return (

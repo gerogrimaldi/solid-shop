@@ -21,6 +21,7 @@ export class WishlistsService {
     });
   
     if (existing) {
+      return;
       throw new BadRequestException('Este producto ya está en tu lista de deseos.');
     }
   

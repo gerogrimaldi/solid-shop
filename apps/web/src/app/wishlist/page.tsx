@@ -21,11 +21,14 @@ export default function WishlistPage() {
 
     const fetchWishlist = async () => {
       try {
-        const response = await fetchWithAuth("/api/wishlists/items", {
-          headers: {
-            Authorization: `Bearer ${user?.tokens?.accessToken}`,
-          },
-        });
+        const response = await fetchWithAuth("/api/wishlists/items", 
+            {
+            headers: {
+              Authorization: `Bearer ${user?.tokens?.accessToken}`
+            },
+            },
+            router
+        );
         if (!response.ok) throw new Error("Error al cargar el carrito");
         const data = await response.json();
         setWishlistItems(data);
@@ -44,7 +47,10 @@ export default function WishlistPage() {
     try {
       const response = await fetch(`/api/wishlists/items/${itemId}`, {
         method: "DELETE",
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.tokens?.accessToken}`
+        },
       });
       if (!response.ok) throw new Error("Error al eliminar");
       setWishlistItems(prev => prev.filter(item => item.itemId  !== itemId));
