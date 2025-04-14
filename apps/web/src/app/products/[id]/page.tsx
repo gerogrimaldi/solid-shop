@@ -7,6 +7,7 @@ import { ShoppingCart, Heart, Check } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -24,6 +25,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
   const [checkingWishlist, setCheckingWishlist] = useState(true);
   const { data: session, status } = useSession();
   const user = session?.user as any;
+  const router = useRouter()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -77,6 +79,9 @@ const ProductPage: React.FC<ProductPageProps> = () => {
   }, [user, product]);
 
   const handleAddToCart = async () => {
+    if (!user){
+      router.push("/login");
+    }
     if (!user || !product) return;
     try {
       const res = await fetch(`/api/carts/items`, {
@@ -97,6 +102,9 @@ const ProductPage: React.FC<ProductPageProps> = () => {
   };
 
   const handleAddToWishlist = async () => {
+    if (!user){
+      router.push("/login");
+    }
     if (!user || !product) return;
     
     try {
@@ -129,7 +137,6 @@ const ProductPage: React.FC<ProductPageProps> = () => {
       setLiked(!liked);
       const item = await res.json();
       setItemId(item.id);
-      console.log(itemId)
     } catch (error) {
       console.error(error);
       alert(liked ? 'Error al eliminar de la lista de deseos' : 'Error al añadir a la lista de deseos');

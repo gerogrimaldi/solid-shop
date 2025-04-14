@@ -14,7 +14,6 @@ export default function WishlistItemComponent({ item, removeItem, addToCart }: W
         <Image
           src={item.imageUrl || "/placeholder-product.png"}
           alt={item.name}
-          layout="fill"
           width={100}
           height={100}
           className="object-contain"

@@ -11,7 +11,7 @@ async function refreshToken(token: JWT): Promise<JWT> {
       throw new Error("No refresh token available");
     }
 
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/refresh-token`, {
+    const res = await fetch(`/api/refresh-token`, {
       method: "POST",
       credentials: "include", 
       headers: {

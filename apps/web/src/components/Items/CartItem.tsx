@@ -13,13 +13,15 @@ export default function CartItemComponent({ item, updateQuantity, removeItem }: 
   // Si no hay imagen, se muestra una imagen por defecto
   return (
     <div className="flex items-center p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
-      <Image
-        src={item.imageUrl || "/placeholder-product.png"}
-        alt={item.name}
-        width={100}
-        height={100}
-        className="rounded-md mr-4 object-cover"
-      />
+      <div className="w-24 h-24 relative text-gray-800">
+        <Image
+          src={item.imageUrl || "/placeholder-product.png"}
+          alt={item.name}
+          width={100}
+          height={100}
+          className="object-contain"
+        />
+      </div>
       <div className="flex-grow">
         <h3 className="font-medium text-gray-800">{item.name}</h3>
         <p className="text-gray-600">${item.price.toFixed(2)}</p>
