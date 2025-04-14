@@ -30,16 +30,16 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Install dependencies in the api
-        working-directory: tpFinalCrombie/apps/api
+        working-directory: apps/api
         run: npm install
 
-      - name: Install dependencies in the web
-        working-directory: tpFinalCrombie/apps/web
-        run: npm install
+      # - name: Install dependencies in the web
+      #   working-directory: tpFinalCrombie/apps/web
+      #   run: npm install
 
       - name: Run tests in apps/api
-        working-directory: tpFinalCrombie/apps/api
-        run: npm run test
+        working-directory: apps/api
+        run: npm run jest
 
       - name: Build and Push Docker Image for API
         env:
