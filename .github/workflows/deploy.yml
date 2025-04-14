@@ -37,6 +37,11 @@ jobs:
         working-directory: apps/api
         run: npm install  && npm run jest
 
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Docker Compose Build and Push API image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
