@@ -17,11 +17,11 @@ const nextConfig = {
       // Rutas de backend Api
       {
         source: "/api/authorization/:path*",
-        destination: `${process.env.BACKEND_URL}/authorization/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/authorization/:path*`,
       },
       {
         source: "/api/:path*",
-        destination: `${process.env.BACKEND_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
       },
     ];
   },
@@ -40,6 +40,8 @@ const nextConfig = {
       },
     ],
   },
+  output: 'standalone',
+
 };
 
 export default nextConfig;

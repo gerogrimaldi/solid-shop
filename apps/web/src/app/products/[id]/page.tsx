@@ -21,7 +21,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
   const [liked, setLiked] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [checkingWishlist, setCheckingWishlist] = useState(true);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user as any;
 
   useEffect(() => {
@@ -43,6 +43,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
 
   useEffect(() => {
     const checkWishlistStatus = async () => {
+      if (status !== "authenticated") return;
       if (!user || !product) {
         setCheckingWishlist(false);
         return;

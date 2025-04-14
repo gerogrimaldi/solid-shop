@@ -12,7 +12,8 @@
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "build:api:image": "turbo prune api --docker && docker build -f apps/api/Dockerfile -t solid-api ."
+    "build:api:image": "docker-compose build --no-cache api && docker-compose up api",
+    "build:web:image": "docker-compose build --no-cache web && docker-compose up web"
   },
   "devDependencies": {
     "@eslint/plugin-kit": "^0.2.8",
