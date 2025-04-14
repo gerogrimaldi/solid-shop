@@ -1,45 +1,60 @@
-# alpine es una imagen liviana
+# Base Alpine image
 FROM node:20-alpine AS base
-WORKDIR /app
-
-# necesario en Alpine para Prisma y dependencias nativas
 RUN apk update && apk add --no-cache libc6-compat
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
-#  instalar turbo yborrar dependencias innecesarias
-FROM base AS turbo-prune
+# Debug stage - let's see what files we have
+FROM base AS pruner
+WORKDIR /app
 RUN npm install -g turbo
 COPY . .
-RUN turbo prune --scope=api --docker
+# Run prune but also print directory structure
+RUN turbo prune api --docker
+RUN echo "Contents of /app/out/full:" && find /app/out/full -type d | sort 
+# RUN echo "Contents of /app/out/full:" && find /app/out/full -type d | sort && echo "Esperando 30 segundos para inspeccionar la salida..." && sleep 30
 
-# instalo dependencias
-FROM base AS deps
+################################################### Install dependencies stage
+FROM base AS installer
 WORKDIR /app
-COPY --from=turbo-prune /app/out/json/ ./
+# Copy all pruned files first
+COPY --from=pruner /app/out/full/ .
+COPY --from=pruner /app/out/json/ .
+# Install dependencies
 RUN npm install
+# Debug: Check for prisma directory
+RUN find /app -name "prisma" -type d
+# RUN find /app -name "prisma" -type d && echo "Esperando 30 segundos para inspeccionar la salida..." && sleep 30
 
-# build
-FROM base AS builder
+############################### Build stage
+FROM installer AS builder
 WORKDIR /app
-COPY --from=deps /app ./
-COPY --from=turbo-prune /app/out/full/ ./
+COPY --from=installer /app/node_modules/ ./node_modules
+# Try to find and generate prisma
+RUN find /app -name "schema.prisma" -type f
+# Run generate from the correct location
+RUN cd $(find /app -name "schema.prisma" -type f | xargs dirname) && \
+    npx prisma generate
+# Build the application
+WORKDIR /app/apps/api
+RUN npm run build
 
-# prisma y nest
-RUN npx prisma generate
-RUN npm run build --workspace=api
-
-# final solo lo necesario para producción
+# Production stage
 FROM node:20-alpine AS runner
 WORKDIR /app
-
-# crear usuario no-root
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-# copiar solo dist y modulos necesarios
-COPY --from=builder /app/apps/api/dist/ ./dist
 COPY --from=builder /app/node_modules/ ./node_modules
+# COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+
+WORKDIR /app/apps/api
+COPY --from=builder /app/apps/api/dist/ ./dist
+COPY --from=builder /app/apps/api/node_modules ./node_modules
 COPY --from=builder /app/apps/api/package.json ./package.json
-COPY --from=builder /app/prisma ./prisma
+# Find and copy the prisma directory
+COPY --from=builder /app/apps/api/prisma ./prisma
 
 EXPOSE 8000
-CMD ["node", "dist/main"]
+
+CMD ["npm", "run", "start:prod"]

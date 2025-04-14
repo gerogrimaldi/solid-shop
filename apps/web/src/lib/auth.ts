@@ -89,6 +89,8 @@ export const authOptions: NextAuthOptions = ({
         
         // If access token hasn't expired, return the current token
         if (token.backendTokens?.accessExpire && Date.now() < token.backendTokens.accessExpire) {
+          // console.log("######################## token aun valido ##########################")
+          // console.log("iat: ", token.backendTokens?.accessExpire)
           return token; // aún válido
         }
         // Access token has expired, try to refresh

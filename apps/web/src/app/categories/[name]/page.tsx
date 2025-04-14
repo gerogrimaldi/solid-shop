@@ -13,7 +13,6 @@ interface categoryDetails {
 
 const CategoryDetail: React.FC<categoryDetails> = () => {
   const { name } = useParams();
-  console.log(name);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
