@@ -132,7 +132,7 @@ export default function CartPage() {
                 <span>${calculateTotal().toFixed(2)}</span>
               </div>
               <button
-                onClick={() => router.push("/checkout")}
+                onClick={() => router.push("/cart/checkout")}
                 className="mt-4 w-full bg-[#39b54a] text-white py-3 rounded-lg hover:bg-[#2ea346] transition-colors font-semibold"
               >
                 Continuar Compra
