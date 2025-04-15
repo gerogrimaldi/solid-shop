@@ -88,7 +88,6 @@ const AdminDashboard = () => {
         </div>
       </header>
       
-      {/* Main */}
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {error && (
           <div className="mb-8 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
@@ -96,7 +95,7 @@ const AdminDashboard = () => {
           </div>
         )}
         
-        {/* Categories */}
+        {/* categorias */}
         <section className="mb-12">
           <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100">
@@ -159,7 +158,7 @@ const AdminDashboard = () => {
           </div>
         </section>
         
-        {/* Products Section */}
+        {/* productos */}
         {selectedCategory && (
           <section>
             <div className="bg-white shadow-sm rounded-lg overflow-hidden">
@@ -255,7 +254,7 @@ const AdminDashboard = () => {
         )}
       </main>
       
-      {/* Add Product Modal */}
+      {/* modal */}
       {isAddProductOpen && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

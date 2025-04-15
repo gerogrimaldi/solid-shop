@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCartItemDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -40,14 +40,17 @@ async checkoutCart(
   cartId: string,
   items: { itemId: string; productId: string; quantity: number }[]
 ) {
-  if (!cartId || !items || items.length === 0) return;
-
+  if (!cartId || !Array.isArray(items) || items.length === 0) {
+    throw new Error('Los items no son válidos o están vacíos');
+  }
   // primero valido stock de todos
   // se usa for y no foreach ya que queremos ir secuencialmente chequeando
   for (const item of items) {
+    console.log(item)
     const stockAvailable = await this.productsService.validateStock(item.productId, item.quantity);
     if (!stockAvailable) {
-      throw new Error(`Producto ${item.productId} sin stock`);
+      const product = await this.productsService.findOne(item.productId);
+      throw new BadRequestException(`Producto ${product.name} con stock insuficiente. [ ${product.stock} ] unidades restantes`);
     }
   }
 
@@ -58,7 +61,8 @@ async checkoutCart(
       // me traigo el producto
       const product = await this.productsService.findOne(item.productId);
 
-      const updatedProduct = await this.productsService.update(item.productId, {
+      console.log("product found: ", product)
+      const updatedProduct = await this.productsService.update(product.id, {
         stock: product.stock - item.quantity,
       });
 

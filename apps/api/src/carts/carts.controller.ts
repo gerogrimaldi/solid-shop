@@ -21,9 +21,13 @@ export class CartsController {
 
   @AcceptedRoles('ADMIN', 'USER')
   @Post("checkout") 
-  checkoutCart(@Req() req, @Body() items: {itemId: string, productId: string, quantity: number}[]) {
+  checkoutCart(
+    @Req() req, 
+    @Body() body: {
+      items: {itemId: string, productId: string, quantity: number}[]
+    }) {
     const cartId = req.user.cartId; // Obtiene el cartId del JWT
-    return this.cartsService.checkoutCart(cartId, items);
+    return this.cartsService.checkoutCart(cartId, body.items);
   }
 
   //podria recibir directamente el cartId?
