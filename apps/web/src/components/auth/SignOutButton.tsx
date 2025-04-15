@@ -7,14 +7,16 @@ export function SignOutButton() {
   async function handleSignOut() {
     try {
       console.log("Cerrando sesión fetch...");
-      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/authorization/logout`, {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
-        credentials: "include",
       });
-
+      if (!response.ok) {
+        throw new Error("Failed to logout from backend");
+      }
       await signOut({ callbackUrl: "/" }); // redirige al home
     } catch (error) {
       console.error("Error cerrando sesión:", error);
+      // await signOut({ callbackUrl: "/" });
     }
   }
 
