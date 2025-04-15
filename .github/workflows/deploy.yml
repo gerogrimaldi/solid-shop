@@ -35,25 +35,18 @@ jobs:
 
       - name: Run tests in apps/api
         working-directory: apps/api
-        run: npm install  && npm run jest
-
-      - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
+          npm ci
+          npm run test
+          
       - name: Docker Compose Build and Push API image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: latest
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-          BUCKET_URL: ${{ secrets.BUCKET_URL }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
         run: |
-          docker-compose -f docker-compose.yml build api
-          docker tag api $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker-compose build --no-cache api
+          docker tag solid-api:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   deploy-to-ecs:
