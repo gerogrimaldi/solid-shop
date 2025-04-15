@@ -12,28 +12,28 @@ interface TokenPayload extends JWTPayload{
 }
 
 export async function middleware(request: NextRequest) {
-  const nextAuthToken = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: true
-  });
-  console.log("next auth token: ", nextAuthToken)
+  // const nextAuthToken = await getToken({
+  //   req: request,
+  //   secret: process.env.AUTH_SECRET,
+  //   // secureCookie: true
+  // });
+  // console.log("next auth token: ", nextAuthToken)
   const token = request.cookies.get("Authentication")?.value;
   const refreshToken = request.cookies.get("RefreshToken")?.value;
 
   // Redirige si no hay token y quiere acceder a /admin
-  if ((!token) && request.nextUrl.pathname.startsWith("/admin")) {
-    if(!nextAuthToken)
+  if (!token && request.nextUrl.pathname.startsWith("/admin")) {
+    // if(!nextAuthToken)
       return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
   }
   // Redirige si no hay token y quiere acceder a /cart
   if ((!token) && request.nextUrl.pathname.startsWith("/cart")) {
-    if(!nextAuthToken)
+    // if(!nextAuthToken)
       return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
   }
   // Redirige si no hay token y quiere acceder a /wishlist
   if ((!token) && request.nextUrl.pathname.startsWith("/wishlist")) {
-    if(!nextAuthToken)
+    // if(!nextAuthToken)
       return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
   }
 
@@ -52,14 +52,14 @@ export async function middleware(request: NextRequest) {
       }
     }else{
       
-      if(nextAuthToken){
-        if (
-          (request.nextUrl.pathname.startsWith("/admin")) &&
-          !nextAuthToken.roles?.includes("ADMIN")
-        ) {
-          return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
-        }
-      }
+      // if(nextAuthToken){
+      //   if (
+      //     (request.nextUrl.pathname.startsWith("/admin")) &&
+      //     !nextAuthToken.roles?.includes("ADMIN")
+      //   ) {
+      //     return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
+      //   }
+      // }
 
     }
 

@@ -40,7 +40,7 @@ export class S3Service {
       //   // expiresIn: 60 * 60 
       // }); // URL expiration time in seconds
       const url = `https://${this.bucketName}.s3.us-east-1.amazonaws.com/${uploadParams.Key}`;
-
+      console.log("i################### imagen subida con exito", url)
       return { message: 'File uploaded successfully', publicUrl: url };
     } catch (error) {
       console.error('Error uploading file:', error);

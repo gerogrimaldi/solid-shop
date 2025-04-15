@@ -167,25 +167,17 @@ export class ProductsService {
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     try {
-      const updatedProduct = await this.prisma.product.upsert({
+      const updatedProduct = await this.prisma.product.update({
         where: { id },
-        update: {
-          ...removeUndefinedFields(updateProductDto),
-          updatedAt: new Date(),
-        },
-        create: {
-          id,
+        data: {
           name: updateProductDto.name,
           description: updateProductDto.description,
           price: updateProductDto.price,
           stock: updateProductDto.stock,
-          imageUrl: updateProductDto.imageUrl || '',
-          createdAt: new Date(),
           updatedAt: new Date(),
-          categoryId: updateProductDto.categoryId,
         },
       });
-
+      
       // Emitir evento si el stock fue actualizado
       if (updateProductDto.stock !== undefined) {
         this.stockGateway.updateStock(

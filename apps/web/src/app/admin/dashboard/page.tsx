@@ -18,12 +18,6 @@ const AdminDashboardPage: React.FC = () => {
             📦 Listado de Productos
           </button>
 
-          <button
-            onClick={() => router.push('/admin/dashboard/nuevo-producto')}
-            className="w-full py-4 bg-amber-600 text-white rounded-xl text-lg font-semibold hover:bg-amber-700 transition"
-          >
-            ➕ Cargar un Nuevo Producto
-          </button>
         </div>
       </div>
     </div>
