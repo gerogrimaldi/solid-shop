@@ -78,6 +78,22 @@ export class ProductsService {
     }
   }
 
+  async validateStock(productId:string, quantity:number){
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        id:true,
+        name:true,
+        stock:true
+      }
+    });
+    
+  if (!product) {
+    throw new NotFoundException('Producto no encontrado');
+  }
+    return product.stock >= quantity;
+  }
+
   // CARRITO
   async findCartProducts(
     cartItems: {
