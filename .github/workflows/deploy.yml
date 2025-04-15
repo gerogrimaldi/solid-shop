@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Clonar el repositorio
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -38,7 +38,12 @@ jobs:
         run: |
           npm ci
           npm run test
-          
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Docker Compose Build and Push API image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
