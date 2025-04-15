@@ -80,7 +80,7 @@ const ProductPage: React.FC<ProductPageProps> = () => {
 
   const handleAddToCart = async () => {
     if (!user){
-      router.push("/login");
+      router.push("/auth/login");
     }
     if (!user || !product) return;
     try {
