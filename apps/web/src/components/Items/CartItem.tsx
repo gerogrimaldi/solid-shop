@@ -42,6 +42,7 @@ export default function CartItemComponent({ item, updateQuantity, removeItem }: 
           +
         </button>
       </div>
+      
       <button
         onClick={() => removeItem(item.itemId)}
         className="ml-4 text-red-500 hover:text-red-700 text-sm"
