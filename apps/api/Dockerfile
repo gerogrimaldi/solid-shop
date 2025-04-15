@@ -11,8 +11,6 @@ RUN npm install -g turbo
 COPY . .
 # Run prune but also print directory structure
 RUN turbo prune api --docker
-RUN echo "Contents of /app/out/full:" && find /app/out/full -type d | sort 
-# RUN echo "Contents of /app/out/full:" && find /app/out/full -type d | sort && echo "Esperando 30 segundos para inspeccionar la salida..." && sleep 30
 
 ################################################### Install dependencies stage
 FROM base AS installer
@@ -24,7 +22,6 @@ COPY --from=pruner /app/out/json/ .
 RUN npm install
 # Debug: Check for prisma directory
 RUN find /app -name "prisma" -type d
-# RUN find /app -name "prisma" -type d && echo "Esperando 30 segundos para inspeccionar la salida..." && sleep 30
 
 ############################### Build stage
 FROM installer AS builder
