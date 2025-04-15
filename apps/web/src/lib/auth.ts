@@ -108,14 +108,14 @@ export const authOptions: NextAuthOptions = ({
                 id: token.sub || '',
                 username: token.username as string,
                 email: token.email as string,
-                    roles: token.roles as string[],
-                    cartId: token.cartId as string,
-                    wishlistId: token.wishlistId as string,
-                    tokens: {
-                      accessToken: token.backendTokens?.accessToken as string,
-                      refreshToken: token.backendTokens?.refreshToken as string,
-                      accessExpire: token.backendTokens?.accessExpire as number,
-                      refreshExpire: token.backendTokens?.refreshExpire as number,
+                roles: token.roles as string[],
+                cartId: token.cartId as string,
+                wishlistId: token.wishlistId as string,
+                tokens: {
+                  accessToken: token.backendTokens?.accessToken as string,
+                  refreshToken: token.backendTokens?.refreshToken as string,
+                  accessExpire: token.backendTokens?.accessExpire as number,
+                  refreshExpire: token.backendTokens?.refreshExpire as number,
                     }
                   };
                 }
